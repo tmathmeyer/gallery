@@ -1,0 +1,40 @@
+body {
+	margin: 0;
+}
+
+#header {
+	height: 48px;
+	line-height: 48px;
+	font-size: 40px;
+	text-align: center;
+	color: #888;
+}
+
+.hike {
+	height: 288px;
+	text-align: center;
+	font-size: 48px;
+	line-height: 288px;
+	margin-top: 6px;
+	padding-top: 6px;
+	border-top: 1px dotted #444;
+	-webkit-filter: grayscale(100%);
+}
+
+.hikephoto {
+	height: 100%;
+	width: 512px;
+	float: left;
+	color: #f9f2d1;
+	text-shadow: 2px 2px #111;
+}
+
+.hike:hover {
+	-webkit-filter: grayscale(0%) !important;
+}
+
+.hikemap {
+	height: 100%;
+	float: left;
+	width: calc(100% - 512px);
+}

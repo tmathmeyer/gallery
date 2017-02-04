@@ -1,0 +1,45 @@
+<html>
+<head>
+	<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+	<div id="header">
+		{{.Title}}
+	</div>
+	{{with .Hikes}}
+	{{range .}}
+	<div class="hike hovergrey">
+		<div class="hikephoto" style="background-image:url('hikedata/{{.HikeID}}/splash.jpg')">
+			{{.HikeName}}
+		</div>
+		<div class="hikemap" lat="{{.HikeLat}}", lng="{{.HikeLng}}">
+		</div>
+	</div>
+	{{end}}
+	{{end}}
+	<script>
+		function initMap() {
+			maps = document.getElementsByClassName('hikemap')
+			for(var i=0; i<maps.length; i++) {
+				var mapCenter = {
+					lat: Number(maps[i].getAttribute('lat')),
+					lng: Number(maps[i].getAttribute('lng'))
+				};
+				var map = new google.maps.Map(maps[i], {
+					center: mapCenter,
+					zoom: 9,
+					disableDefaultUI: true
+				})
+				var marker = new google.maps.Marker({
+					position: mapCenter,
+					map: map,
+					title: 'hikeLocation'
+				});
+				map.setOptions({draggable: false, zoomControl: false, scrollwheel: false, disableDoubleClickZoom: true});
+			}
+		}
+	</script>
+	<script src="https://maps.googleapis.com/maps/api/js?key={{.ApiKey}}&callback=initMap"
+	async defer></script>
+</body>
+</html>
