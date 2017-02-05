@@ -1,89 +1,89 @@
 package main
 
 import (
-	"os"
 	"fmt"
-	"strings"
-	"os/exec"
-	"net/http"
-	"io/ioutil"
-	"html/template"
 	"github.com/BurntSushi/toml"
+	"html/template"
+	"io/ioutil"
+	"net/http"
+	"os"
+	"os/exec"
+	"strings"
 )
 
 type Hike struct {
 	HikeName string
-	HikeID string
-	HikeLat string
-	HikeLng string
+	HikeID   string
+	HikeLat  string
+	HikeLng  string
 }
 
 type Config struct {
-	Title string
+	Title  string
 	ApiKey string
-	Hikes []Hike
+	Hikes  []Hike
 }
 
 type Image struct {
-	Uri string
+	Uri  string
 	Desc string
 }
 
 type HikeDetail struct {
 	HikeName string
-	HikeID string
-	Images []Image
-	Panos []Image
+	HikeID   string
+	Images   []Image
+	Panos    []Image
 }
 
 func hikeDetailhandler(w http.ResponseWriter, r *http.Request) {
 	var config Config
 	if _, err := toml.DecodeFile("config.toml", &config); err != nil {
-	  	fmt.Printf("%s\n", err)
-	  	http.NotFound(w, r)
+		fmt.Printf("%s\n", err)
+		http.NotFound(w, r)
 	}
 	hikeID := r.URL.Path[len("/hikedetail/"):]
-	for _,Hike := range config.Hikes {
+	for _, Hike := range config.Hikes {
 		if Hike.HikeID == hikeID {
-			img,_ := ioutil.ReadDir("./hikedata/"+hikeID+"/img")
-			pan,_ := ioutil.ReadDir("./hikedata/"+hikeID+"/pan")
+			img, _ := ioutil.ReadDir("./hikedata/" + hikeID + "/img")
+			pan, _ := ioutil.ReadDir("./hikedata/" + hikeID + "/pan")
 
 			var imgct = 0
 			var panct = 0
-			for _,f := range img {
+			for _, f := range img {
 				if !strings.HasPrefix(f.Name(), "tn_") {
 					imgct += 1
 				}
 			}
-			for _,f := range pan {
+			for _, f := range pan {
 				if !strings.HasPrefix(f.Name(), "tn_") {
 					panct += 1
 				}
 			}
 
 			var Images = make([]Image, imgct)
-			for i,f := range img {
+			for i, f := range img {
 				if !strings.HasPrefix(f.Name(), "tn_") {
 					Images[i] = Image{
-						Uri: f.Name(),
+						Uri:  f.Name(),
 						Desc: f.Name()}
 				}
 			}
 
 			var Panos = make([]Image, panct)
-			for i,f := range pan {
+			for i, f := range pan {
 				if !strings.HasPrefix(f.Name(), "tn_") {
 					Panos[i] = Image{
-						Uri: f.Name(),
+						Uri:  f.Name(),
 						Desc: f.Name()}
 				}
 			}
 
 			var Detail = HikeDetail{
 				HikeName: Hike.HikeName,
-				HikeID: Hike.HikeID,
-				Panos: Panos,
-				Images: Images}
+				HikeID:   Hike.HikeID,
+				Panos:    Panos,
+				Images:   Images}
 
 			t, _ := template.ParseFiles("detail.template.html")
 			t.Execute(w, Detail)
@@ -143,16 +143,20 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 	t, _ := template.ParseFiles("index.template.html")
 	var config Config
 	if _, err := toml.DecodeFile("config.toml", &config); err != nil {
-	  	fmt.Printf("%s\n", err)
-	  	http.NotFound(w, r)
+		fmt.Printf("%s\n", err)
+		http.NotFound(w, r)
 	}
 	t.Execute(w, config)
 }
 
 func exists(path string) bool {
 	_, err := os.Stat(path)
-	if err == nil { return true }
-	if os.IsNotExist(err) { return false }
+	if err == nil {
+		return true
+	}
+	if os.IsNotExist(err) {
+		return false
+	}
 	return true
 }
 
@@ -180,7 +184,7 @@ func hikeDataHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.ServeFile(w, r, "./hikedata/" + restPath)
+	http.ServeFile(w, r, "./hikedata/"+restPath)
 }
 
 func main() {
