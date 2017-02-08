@@ -1,0 +1,37 @@
+<html lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Photo Sphere Viewer</title>
+        <link rel="icon" type="image/png" href="http://photo-sphere-viewer.js.org/favicon.png">
+    </head>
+    <body>
+        <div class="container bs-docs-container">
+            <div class="row">
+                <div class="col-md-9" role="main">
+                    <div id="photosphere">
+                    </div>
+                    <link rel="stylesheet" href="/static/photo-sphere-viewer.min.css">
+                    <script src="/static/three.min.js"></script>
+                    <script src="/static/D.min.js"></script>
+                    <script src="/static/doT.min.js"></script>
+                    <script src="/static/uevent.min.js"></script>
+                    <script src="/static/CanvasRenderer.js"></script>
+                    <script src="/static/Projector.js"></script>
+                    <script src="/static/photo-sphere-viewer.min.js"></script>
+                    <script>
+                        var PSV = new PhotoSphereViewer({
+                            panorama: '/pan/raw/{{$.HikeID}}/{{.Uri}}',
+                            container: 'photosphere',
+                            caption: '<b>&copy; ARTISTE</b>',
+                            loading_img: 'http://photo-sphere-viewer.js.org/assets/photosphere-logo.gif',
+                            navbar: 'autorotate zoom caption fullscreen',
+                            default_fov: 70,
+                            mousewheel: true,
+                        });
+                    </script>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
