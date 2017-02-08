@@ -7,12 +7,15 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 
 	"github.com/BurntSushi/toml"
 )
 
 const serverPort string = ":8081"
+const galleryDataDir string = "./gallerydata/"
+const thumbPrefix string = "tn_"
 
 // Hike stores hike information for displaying on index page
 type Hike struct {
@@ -43,34 +46,34 @@ type HikeDetail struct {
 	Panos    []Image
 }
 
-func hikeDetailhandler(w http.ResponseWriter, r *http.Request) {
+func hikeDetailhandler(w http.ResponseWriter, req *http.Request) {
 	var config Config
 	if _, err := toml.DecodeFile("config.toml", &config); err != nil {
 		fmt.Printf("%s\n", err)
-		http.NotFound(w, r)
+		http.NotFound(w, req)
 	}
-	hikeID := r.URL.Path[len("/gallerydetail/"):]
+	hikeID := req.URL.Path[len("/gallerydetail/"):]
 	for _, Hike := range config.Hikes {
 		if Hike.HikeID == hikeID {
-			img, _ := ioutil.ReadDir("./gallerydata/" + hikeID + "/img")
-			pan, _ := ioutil.ReadDir("./gallerydata/" + hikeID + "/pan")
+			img, _ := ioutil.ReadDir(galleryDataDir + hikeID + "/img")
+			pan, _ := ioutil.ReadDir(galleryDataDir + hikeID + "/pan")
 
 			var imgct = 0
 			var panct = 0
 			for _, f := range img {
-				if !strings.HasPrefix(f.Name(), "tn_") {
+				if !strings.HasPrefix(f.Name(), thumbPrefix) {
 					imgct++
 				}
 			}
 			for _, f := range pan {
-				if !strings.HasPrefix(f.Name(), "tn_") {
+				if !strings.HasPrefix(f.Name(), thumbPrefix) {
 					panct++
 				}
 			}
 
 			var Images = make([]Image, imgct)
 			for i, f := range img {
-				if !strings.HasPrefix(f.Name(), "tn_") {
+				if !strings.HasPrefix(f.Name(), thumbPrefix) {
 					Images[i] = Image{
 						URI:  f.Name(),
 						Desc: f.Name()}
@@ -79,7 +82,7 @@ func hikeDetailhandler(w http.ResponseWriter, r *http.Request) {
 
 			var Panos = make([]Image, panct)
 			for i, f := range pan {
-				if !strings.HasPrefix(f.Name(), "tn_") {
+				if !strings.HasPrefix(f.Name(), thumbPrefix) {
 					Panos[i] = Image{
 						URI:  f.Name(),
 						Desc: f.Name()}
@@ -97,61 +100,73 @@ func hikeDetailhandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-	http.NotFound(w, r)
+	http.NotFound(w, req)
 }
 
-func imageHandler(w http.ResponseWriter, r *http.Request) {
-	typepath := strings.SplitN(r.URL.Path[len("/img/"):], "/", 3)
-	if len(typepath) != 3 {
-		http.NotFound(w, r)
+func imageHandler(w http.ResponseWriter, req *http.Request) {
+	// Path expected: /img/[[size]]/[[HikeId]]/[[ImageName]]
+	typepath := strings.SplitN(req.URL.Path[1:], "/", 4)
+	if len(typepath) != 4 {
+		http.NotFound(w, req)
 		return
 	}
 
-	if strings.HasPrefix(typepath[0], ".") {
-		http.NotFound(w, r)
-		fmt.Printf("%s : [%s]\n", "Cannot start with a '.'", typepath[0])
-		return
+	for _, dirname := range typepath[:len(typepath)-1] {
+		if strings.HasPrefix(dirname, ".") {
+			http.NotFound(w, req)
+			fmt.Printf("%s : [%s]\n", "Cannot start with a '.'", dirname)
+			return
+		}
 	}
-	if strings.HasPrefix(typepath[1], ".") {
-		http.NotFound(w, r)
-		fmt.Printf("%s : [%s]\n", "Cannot start with a '.'", typepath[1])
+
+	// ie img/ or pan/
+	imgDir := typepath[0] + "/"
+	imgSize := typepath[1]
+	hikeID := typepath[2] + "/"
+	imgName := typepath[3]
+
+	imgPath := galleryDataDir + hikeID + imgDir + imgName
+	if imgSize == "full" {
+		http.ServeFile(w, req, imgPath)
 		return
 	}
 
-	if typepath[0] == "full" {
-		img_path := "./gallerydata/" + typepath[1] + "/img/" + typepath[2]
-		http.ServeFile(w, r, img_path)
-		return
-	}
+	if imgSize == "small" {
+		// Jank code to replace file extensions
+		thmPath := galleryDataDir + hikeID + imgDir + thumbPrefix + strings.TrimSuffix(imgName, filepath.Ext(imgName)) + ".jpg"
 
-	if typepath[0] == "small" {
-		img_path := "./gallerydata/" + typepath[1] + "/img/" + typepath[2]
-		thm_path := "./gallerydata/" + typepath[1] + "/img/tn_" + typepath[2]
-
-		if !exists(thm_path) {
-			cmd := exec.Command("./vipsthumbnail", "-s", "450", img_path)
+		if !exists(thmPath) {
+			// vipsthumbnail will only produce .jpg images
+			fmt.Printf("Creating thumbnail for Image: %s\n", thmPath)
+			cmd := exec.Command("vipsthumbnail", "-s", "450", imgPath)
 			err := cmd.Run()
 			if err != nil {
 				fmt.Println(err)
-				http.NotFound(w, r)
+				http.NotFound(w, req)
 				return
 			}
 		}
-
-		http.ServeFile(w, r, thmPath)
+		http.ServeFile(w, req, thmPath)
 		return
 	}
 
-	fmt.Printf("req : [%s]\n", typepath[1])
-	http.NotFound(w, r)
+	fmt.Printf("req : [%s]\n", hikeID)
+	http.NotFound(w, req)
 }
 
-func indexHandler(w http.ResponseWriter, r *http.Request) {
+func indexHandler(w http.ResponseWriter, req *http.Request) {
 	t, _ := template.ParseFiles("index.template.html")
 	var config Config
 	if _, err := toml.DecodeFile("config.toml", &config); err != nil {
 		fmt.Printf("%s\n", err)
-		http.NotFound(w, r)
+		http.NotFound(w, req)
+	}
+	// Create directories if they do not exist
+	mkdir(galleryDataDir)
+	for _, hike := range config.Hikes {
+		mkdir(galleryDataDir + hike.HikeID)
+		mkdir(galleryDataDir + hike.HikeID + "/img")
+		mkdir(galleryDataDir + hike.HikeID + "/pan")
 	}
 	t.Execute(w, config)
 }
@@ -165,6 +180,16 @@ func exists(path string) bool {
 		return false
 	}
 	return true
+}
+
+func mkdir(path string) {
+	if exists(path) {
+		return
+	}
+	err := os.Mkdir(path, os.ModePerm)
+	if err != nil {
+		fmt.Printf("%s\n", err)
+	}
 }
 
 func hikeDataHandler(w http.ResponseWriter, r *http.Request) {
@@ -199,6 +224,7 @@ func main() {
 	http.HandleFunc("/gallerydetail/", hikeDetailhandler)
 	http.HandleFunc("/gallerydata/", hikeDataHandler)
 	http.HandleFunc("/img/", imageHandler)
+	http.HandleFunc("/pan/", imageHandler)
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
 	fmt.Printf("Starting gallery server on port %s\n", serverPort)
 	http.ListenAndServe(serverPort, nil)

@@ -1,5 +1,5 @@
 # Gallery
-Just a simple gallery app written in golang
+Just a simple gallery app written in golang.  
 
 ## Dependancies
 libvips (for the vipsthumbnail binary)  
