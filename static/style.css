@@ -10,7 +10,7 @@ body {
 	color: #888;
 }
 
-.hike {
+.gallery {
 	height: 288px;
 	text-align: center;
 	font-size: 48px;
@@ -21,19 +21,20 @@ body {
 	-webkit-filter: grayscale(100%);
 }
 
-.hikephoto {
+.galleryphoto {
 	height: 100%;
 	width: 512px;
 	float: left;
 	color: #f9f2d1;
 	text-shadow: 2px 2px #111;
+	background-size: cover;
 }
 
-.hike:hover {
+.gallery:hover {
 	-webkit-filter: grayscale(0%) !important;
 }
 
-.hikemap {
+.gallerymap {
 	height: 100%;
 	float: left;
 	width: calc(100% - 512px);

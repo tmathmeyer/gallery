@@ -21,9 +21,9 @@
                     <script src="/static/photo-sphere-viewer.min.js"></script>
                     <script>
                         var PSV = new PhotoSphereViewer({
-                            panorama: '/pan/raw/{{$.HikeID}}/{{.Uri}}',
+                            panorama: '/pan/raw/{{.GalleryID}}/{{.URI}}',
                             container: 'photosphere',
-                            caption: '<b>&copy; ARTISTE</b>',
+                            caption: '<b>&copy; {{.CopyrightHolder}}</b>',
                             loading_img: 'http://photo-sphere-viewer.js.org/assets/photosphere-logo.gif',
                             navbar: 'autorotate zoom caption fullscreen',
                             default_fov: 70,

@@ -6,14 +6,14 @@
 	<div id="header">
 		{{.Title}}
 	</div>
-	{{with .Hikes}}
+	{{with .Galleries}}
 	{{range .}}
-	<a href="/gallerydetail/{{.HikeID}}">
-	<div class="hike hovergrey">
-		<div class="hikephoto" style="background-image:url('/gallerydata/{{.HikeID}}/splash.jpg')">
-			{{.HikeName}}
+	<a href="/gallerydetail/{{.GalleryID}}">
+	<div class="gallery hovergrey">
+		<div class="galleryphoto" style="background-image:url('/gallerydata/{{.GalleryID}}/splash.jpg')">
+			{{.GalleryName}}
 		</div>
-		<div class="hikemap" lat="{{.HikeLat}}", lng="{{.HikeLng}}">
+		<div class="gallerymap" lat="{{.GalleryLat}}", lng="{{.GalleryLng}}">
 		</div>
 	</div>
 	</a>
@@ -21,7 +21,7 @@
 	{{end}}
 	<script>
 		function initMap() {
-			maps = document.getElementsByClassName('hikemap')
+			maps = document.getElementsByClassName('gallerymap')
 			for(var i=0; i<maps.length; i++) {
 				var mapCenter = {
 					lat: Number(maps[i].getAttribute('lat')),
@@ -35,13 +35,13 @@
 				var marker = new google.maps.Marker({
 					position: mapCenter,
 					map: map,
-					title: 'hikeLocation'
+					title: 'galleryLocation'
 				});
 				map.setOptions({draggable: false, zoomControl: false, scrollwheel: false, disableDoubleClickZoom: true});
 			}
 		}
 	</script>
-	<script src="https://maps.googleapis.com/maps/api/js?key={{.ApiKey}}&callback=initMap"
+	<script src="https://maps.googleapis.com/maps/api/js?key={{.APIKey}}&callback=initMap"
 	async defer></script>
 </body>
 </html>
