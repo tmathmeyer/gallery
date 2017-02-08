@@ -1,11 +1,11 @@
-#Gallery
+# Gallery
 Just a simple gallery app written in golang
 
-##dependancies
+## Dependancies
 libvips (for the vipsthumbnail binary)  
 golang  
 BurntSushi: toml (go get github.com/BurntSushi/toml)  
-google maps API key  
+Google maps API key  
 
 ##setup
  1 copy config.toml.example to config.toml  

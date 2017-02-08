@@ -2,15 +2,19 @@ package main
 
 import (
 	"fmt"
-	"github.com/BurntSushi/toml"
 	"html/template"
 	"io/ioutil"
 	"net/http"
 	"os"
 	"os/exec"
 	"strings"
+
+	"github.com/BurntSushi/toml"
 )
 
+const serverPort string = ":8081"
+
+// Hike stores hike information for displaying on index page
 type Hike struct {
 	HikeName string
 	HikeID   string
@@ -18,17 +22,20 @@ type Hike struct {
 	HikeLng  string
 }
 
+// Config stores server configuration
 type Config struct {
 	Title  string
-	ApiKey string
+	APIKey string
 	Hikes  []Hike
 }
 
+// Image stores locator and description
 type Image struct {
-	Uri  string
+	URI  string
 	Desc string
 }
 
+// HikeDetail stores hike information for displaying on contents page
 type HikeDetail struct {
 	HikeName string
 	HikeID   string
@@ -52,12 +59,12 @@ func hikeDetailhandler(w http.ResponseWriter, r *http.Request) {
 			var panct = 0
 			for _, f := range img {
 				if !strings.HasPrefix(f.Name(), "tn_") {
-					imgct += 1
+					imgct++
 				}
 			}
 			for _, f := range pan {
 				if !strings.HasPrefix(f.Name(), "tn_") {
-					panct += 1
+					panct++
 				}
 			}
 
@@ -65,7 +72,7 @@ func hikeDetailhandler(w http.ResponseWriter, r *http.Request) {
 			for i, f := range img {
 				if !strings.HasPrefix(f.Name(), "tn_") {
 					Images[i] = Image{
-						Uri:  f.Name(),
+						URI:  f.Name(),
 						Desc: f.Name()}
 				}
 			}
@@ -74,7 +81,7 @@ func hikeDetailhandler(w http.ResponseWriter, r *http.Request) {
 			for i, f := range pan {
 				if !strings.HasPrefix(f.Name(), "tn_") {
 					Panos[i] = Image{
-						Uri:  f.Name(),
+						URI:  f.Name(),
 						Desc: f.Name()}
 				}
 			}
@@ -131,7 +138,7 @@ func imageHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		http.ServeFile(w, r, thm_path)
+		http.ServeFile(w, r, thmPath)
 		return
 	}
 
@@ -193,5 +200,6 @@ func main() {
 	http.HandleFunc("/gallerydata/", hikeDataHandler)
 	http.HandleFunc("/img/", imageHandler)
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
-	http.ListenAndServe(":8081", nil)
+	fmt.Printf("Starting gallery server on port %s\n", serverPort)
+	http.ListenAndServe(serverPort, nil)
 }

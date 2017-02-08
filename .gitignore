@@ -1,3 +1,9 @@
 old_index.html
 gallerydata/
 config.toml
+
+# vs code settings
+.vscode/
+
+# Binaries
+server.exe
