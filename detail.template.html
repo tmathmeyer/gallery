@@ -5,13 +5,13 @@
 </head>
 <body>
 
-<h2>{{.HikeName}}</h2>
+<h2>{{.GalleryName}}</h2>
 {{with .Images}}
 {{range .}}
 <div class="responsive">
   <div class="img">
-    <a target="_blank" href="/img/full/{{$.HikeID}}/{{.URI}}">
-      <img src="/img/small/{{$.HikeID}}/{{.URI}}" alt="{{.Desc}}" width="300" height="200">
+    <a target="_blank" href="/img/full/{{$.GalleryID}}/{{.URI}}">
+      <img src="/img/small/{{$.GalleryID}}/{{.URI}}" alt="{{.Desc}}" width="300" height="200">
     </a>
     <div class="desc">{{.Desc}}</div>
   </div>
@@ -23,8 +23,8 @@
 {{range .}}
 <div class="responsive">
   <div class="img">
-    <a target="_blank" href="/pan/full/{{$.HikeID}}/{{.URI}}">
-      <img src="/pan/small/{{$.HikeID}}/{{.URI}}" alt="{{.Desc}}" width="300" height="200">
+    <a target="_blank" href="/pan/full/{{$.GalleryID}}/{{.URI}}">
+      <img src="/pan/small/{{$.GalleryID}}/{{.URI}}" alt="{{.Desc}}" width="300" height="200">
     </a>
     <div class="desc">{{.Desc}}</div>
   </div>
