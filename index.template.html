@@ -8,9 +8,9 @@
 	</div>
 	{{with .Hikes}}
 	{{range .}}
-	<a href="/hikedetail/{{.HikeID}}">
+	<a href="/gallerydetail/{{.HikeID}}">
 	<div class="hike hovergrey">
-		<div class="hikephoto" style="background-image:url('/hikedata/{{.HikeID}}/splash.jpg')">
+		<div class="hikephoto" style="background-image:url('/gallerydata/{{.HikeID}}/splash.jpg')">
 			{{.HikeName}}
 		</div>
 		<div class="hikemap" lat="{{.HikeLat}}", lng="{{.HikeLng}}">

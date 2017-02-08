@@ -42,11 +42,11 @@ func hikeDetailhandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Printf("%s\n", err)
 		http.NotFound(w, r)
 	}
-	hikeID := r.URL.Path[len("/hikedetail/"):]
+	hikeID := r.URL.Path[len("/gallerydetail/"):]
 	for _, Hike := range config.Hikes {
 		if Hike.HikeID == hikeID {
-			img, _ := ioutil.ReadDir("./hikedata/" + hikeID + "/img")
-			pan, _ := ioutil.ReadDir("./hikedata/" + hikeID + "/pan")
+			img, _ := ioutil.ReadDir("./gallerydata/" + hikeID + "/img")
+			pan, _ := ioutil.ReadDir("./gallerydata/" + hikeID + "/pan")
 
 			var imgct = 0
 			var panct = 0
@@ -112,17 +112,17 @@ func imageHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if typepath[0] == "full" {
-		img_path := "./hikedata/" + typepath[1] + "/img/" + typepath[2]
+		img_path := "./gallerydata/" + typepath[1] + "/img/" + typepath[2]
 		http.ServeFile(w, r, img_path)
 		return
 	}
 
 	if typepath[0] == "small" {
-		img_path := "./hikedata/" + typepath[1] + "/img/" + typepath[2]
-		thm_path := "./hikedata/" + typepath[1] + "/img/tn_" + typepath[2]
+		img_path := "./gallerydata/" + typepath[1] + "/img/" + typepath[2]
+		thm_path := "./gallerydata/" + typepath[1] + "/img/tn_" + typepath[2]
 
 		if !exists(thm_path) {
-			cmd := exec.Command("vipsthumbnail", "-s", "450", img_path)
+			cmd := exec.Command("./vipsthumbnail", "-s", "450", img_path)
 			err := cmd.Run()
 			if err != nil {
 				fmt.Println(err)
@@ -161,7 +161,7 @@ func exists(path string) bool {
 }
 
 func hikeDataHandler(w http.ResponseWriter, r *http.Request) {
-	restPath := r.URL.Path[len("/hikedata/"):]
+	restPath := r.URL.Path[len("/gallerydata/"):]
 	partsPath := strings.Split(restPath, "/")
 	if len(partsPath) < 2 {
 		http.NotFound(w, r)
@@ -178,19 +178,19 @@ func hikeDataHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Printf("%s : [%s]\n", "Cannot start with a '.'", partsPath[1])
 		return
 	}
-	if !exists("./hikedata/" + restPath) {
+	if !exists("./gallerydata/" + restPath) {
 		http.NotFound(w, r)
 		fmt.Printf("%s : [%s]\n", "path does not exist", restPath)
 		return
 	}
 
-	http.ServeFile(w, r, "./hikedata/"+restPath)
+	http.ServeFile(w, r, "./gallerydata/"+restPath)
 }
 
 func main() {
 	http.HandleFunc("/", indexHandler)
-	http.HandleFunc("/hikedetail/", hikeDetailhandler)
-	http.HandleFunc("/hikedata/", hikeDataHandler)
+	http.HandleFunc("/gallerydetail/", hikeDetailhandler)
+	http.HandleFunc("/gallerydata/", hikeDataHandler)
 	http.HandleFunc("/img/", imageHandler)
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
 	http.ListenAndServe(":8081", nil)
