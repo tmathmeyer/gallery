@@ -1,14 +1,14 @@
 Title = "[[your page title here]]"
 ApiKey = "[[your key here]]"
 
-[[Hikes]]
-HikeName = "Goldmyer"
-HikeID = "goldmyer.10.2016"
-HikeLat = "47.485"
-HikeLng = "-121.3889"
+[[Galleries]]
+GalleryName = "Goldmyer"
+GalleryID = "goldmyer.10.2016"
+GalleryLat = "47.485"
+GalleryLng = "-121.3889"
 
-[[Hikes]]
-HikeName = "Big Four Ice Caves"
-HikeID = "big.four.9.2016"
-HikeLat = "48.025"
-HikeLng = "-121.51939"
+[[Galleries]]
+GalleryName = "Big Four Ice Caves"
+GalleryID = "big.four.9.2016"
+GalleryLat = "48.025"
+GalleryLng = "-121.51939"

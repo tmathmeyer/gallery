@@ -1,71 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
-<style>
-div.img {
-    border: 1px solid #ccc;
-}
-
-div.img:hover {
-    border: 1px solid #777;
-}
-
-div.img img {
-    width: 100%;
-    height: auto;
-}
-
-div.desc {
-    padding: 15px;
-    text-align: center;
-}
-
-* {
-    box-sizing: border-box;
-}
-
-.responsive {
-    padding: 0 6px;
-    float: left;
-    width: 9.99999%;
-}
-
-@media only screen and (max-width: 2000px){
-    .responsive {
-        width: 24.99999%;
-        margin: 6px 0;
-    }
-}
-
-@media only screen and (max-width: 700px){
-    .responsive {
-        width: 49.99999%;
-        margin: 6px 0;
-    }
-}
-
-@media only screen and (max-width: 500px){
-    .responsive {
-        width: 100%;
-    }
-}
-
-.clearfix:after {
-    content: "";
-    display: table;
-    clear: both;
-}
-</style>
+	<link rel="stylesheet" href="/static/detail.css">
 </head>
 <body>
 
-<h2>{{.HikeName}}</h2>
+<h2>{{.GalleryName}}</h2>
 {{with .Images}}
 {{range .}}
 <div class="responsive">
   <div class="img">
-    <a target="_blank" href="/img/full/{{$.HikeID}}/{{.Uri}}">
-      <img src="/img/small/{{$.HikeID}}/{{.Uri}}" alt="{{.Desc}}" width="300" height="200">
+    <a target="_blank" href="/img/full/{{$.GalleryID}}/{{.URI}}">
+      <img src="/img/small/{{$.GalleryID}}/{{.URI}}" alt="{{.Desc}}" width="300" height="200">
     </a>
     <div class="desc">{{.Desc}}</div>
   </div>
@@ -77,8 +23,8 @@ div.desc {
 {{range .}}
 <div class="responsive">
   <div class="img">
-    <a target="_blank" href="/pan/full/{{$.HikeID}}/{{.Uri}}">
-      <img src="/pan/small/{{$.HikeID}}/{{.Uri}}" alt="{{.Desc}}" width="300" height="200">
+    <a target="_blank" href="/pan/full/{{$.GalleryID}}/{{.URI}}">
+      <img src="/pan/small/{{$.GalleryID}}/{{.URI}}" alt="{{.Desc}}" width="300" height="200">
     </a>
     <div class="desc">{{.Desc}}</div>
   </div>
