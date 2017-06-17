@@ -1,47 +1,32 @@
 <html>
-<head>
-	<link rel="stylesheet" href="/static/style.css">
-</head>
-<body>
-	<div id="header">
-		{{.Title}}
-	</div>
-	{{with .Galleries}}
-	{{range .}}
-	<a href="/gallerydetail/{{.GalleryID}}">
-	<div class="gallery hovergrey">
-		<div class="galleryphoto" style="background-image:url('/gallerydata/{{.GalleryID}}/splash.jpg')">
-			{{.GalleryName}}
+	<head>
+		<link rel="stylesheet" type="text/css" href="/static/index.css">
+		<link rel="stylesheet" type="text/css" href="/static/breadcrumb.css">
+		<link rel="stylesheet" type="text/css" href="/static/common.css">
+	</head>
+	<body>
+		<div id="header" class="letterpress">
+			<ul class="breadcrumb">
+				<li><a href="#">{{.Title}}</a></li>
+			</ul>
 		</div>
-		<div class="gallerymap" lat="{{.GalleryLat}}", lng="{{.GalleryLng}}">
+		<div id="albums">
+			<div id="albumscroll">
+				{{with .Galleries}}
+				{{range .}}
+				<div class="albumcover">
+					<div class="coverimg">
+						<image src="gallerydata/{{.GalleryID}}/splash.jpg"></image>
+					</div>
+					<div class="shadow"></div>
+					<div class="covertitle albumletterpress" onclick="location.href='/gallerydetail/{{.GalleryID}}'">
+						{{.GalleryName}}
+					</div>
+				</div>
+				{{end}}
+				{{end}}
+			</div>
 		</div>
-	</div>
-	</a>
-	{{end}}
-	{{end}}
-	<script>
-		function initMap() {
-			maps = document.getElementsByClassName('gallerymap')
-			for(var i=0; i<maps.length; i++) {
-				var mapCenter = {
-					lat: Number(maps[i].getAttribute('lat')),
-					lng: Number(maps[i].getAttribute('lng'))
-				};
-				var map = new google.maps.Map(maps[i], {
-					center: mapCenter,
-					zoom: 9,
-					disableDefaultUI: true
-				})
-				var marker = new google.maps.Marker({
-					position: mapCenter,
-					map: map,
-					title: 'galleryLocation'
-				});
-				map.setOptions({draggable: false, zoomControl: false, scrollwheel: false, disableDoubleClickZoom: true});
-			}
-		}
-	</script>
-	<script src="https://maps.googleapis.com/maps/api/js?key={{.APIKey}}&callback=initMap"
-	async defer></script>
-</body>
+	</body>
 </html>
+

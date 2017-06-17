@@ -47,6 +47,7 @@ type GalleryDetail struct {
 	GalleryID   string
 	Images      []Image
 	Panos       []Image
+	Title       string
 }
 
 func galleryDetailhandler(w http.ResponseWriter, r *http.Request) {
@@ -93,11 +94,18 @@ func galleryDetailhandler(w http.ResponseWriter, r *http.Request) {
 				}
 			}
 
+			var config Config
+			if _, err := toml.DecodeFile("config.toml", &config); err != nil {
+				fmt.Printf("%s\n", err)
+				http.NotFound(w, r)
+			}
+
 			var Detail = GalleryDetail{
 				GalleryName: Gallery.GalleryName,
 				GalleryID:   Gallery.GalleryID,
 				Panos:       Panos,
-				Images:      Images}
+				Images:      Images,
+			    Title:       config.Title}
 
 			t, _ := template.ParseFiles("templates/detail.html")
 			t.Execute(w, Detail)

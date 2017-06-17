@@ -1,37 +1,42 @@
-<!DOCTYPE html>
 <html>
-<head>
-	<link rel="stylesheet" href="/static/detail.css">
-</head>
-<body>
-
-<h2>{{.GalleryName}}</h2>
-{{with .Images}}
-{{range .}}
-<div class="responsive">
-  <div class="img">
-    <a target="_blank" href="/img/full/{{$.GalleryID}}/{{.URI}}">
-      <img src="/img/small/{{$.GalleryID}}/{{.URI}}" alt="{{.Desc}}" width="300" height="200">
-    </a>
-    <div class="desc">{{.Desc}}</div>
-  </div>
-</div>
-{{end}}
-{{end}}
-
-{{with .Panos}}
-{{range .}}
-<div class="responsive">
-  <div class="img">
-    <a target="_blank" href="/pan/full/{{$.GalleryID}}/{{.URI}}">
-      <img src="/pan/small/{{$.GalleryID}}/{{.URI}}" alt="{{.Desc}}" width="300" height="200">
-    </a>
-    <div class="desc">{{.Desc}}</div>
-  </div>
-</div>
-{{end}}
-{{end}}
-
-<div class="clearfix"></div>
-</body>
+  <head>
+    <link rel="stylesheet" type="text/css" href="/static/gallery.css">
+    <link rel="stylesheet" type="text/css" href="/static/breadcrumb.css">
+    <link rel="stylesheet" type="text/css" href="/static/common.css">
+  </head>
+  <body>
+    <div id="header" class="letterpress">
+      <ul class="breadcrumb">
+        <li><a href="/">{{.Title}}</a></li>
+        <li><a href="#">{{.GalleryName}}</a></li>
+      </ul>
+    </div>
+    <div id="photos">
+      <div id="photoscroll">
+        {{with .Images}}
+        {{range .}}
+        <div class="photo">
+          <div class="photoimg">
+            <a target="_blank" href="/img/full/{{$.GalleryID}}/{{.URI}}">
+              <image src="/img/small/{{$.GalleryID}}/{{.URI}}" alt="{{.Desc}}"></image>
+            </a>
+          </div>
+        </div>
+        {{end}}
+        {{end}}
+        {{with .Panos}}
+        {{range .}}
+        <div class="photo">
+          <div class="photoimg">
+            <a target="_blank" href="/pan/full/{{$.GalleryID}}/{{.URI}}">
+              <image src="/pan/small/{{$.GalleryID}}/{{.URI}}" alt="{{.Desc}}"></image>
+            </a>
+          </div>
+        </div>
+        {{end}}
+        {{end}}
+      </div>
+    </div>
+  </body>
 </html>
+

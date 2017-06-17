@@ -1,0 +1,35 @@
+#photos {
+	position: fixed;
+	overflow: hidden;
+	left: 0;
+	right: 0;
+	top: 60px;
+	bottom: 0;
+	margin-left: 30px;
+	margin-right: 30px;
+}
+
+#photoscroll {
+	position: absolute;
+	overflow-y: scroll;
+	left: 0;
+	height: 100%;
+	right: -17px;
+}
+.photo {
+	position: relative;
+	float: left;
+	background: #2f4050;
+	margin: 10px;
+	box-sizing: border-box;
+	border: 1px solid #4f6478;
+}
+
+.photoimg {
+	overflow: hidden;
+    object-fit: contain;
+}
+
+.photo:hover {
+	border: 1px solid #cfc;
+}
