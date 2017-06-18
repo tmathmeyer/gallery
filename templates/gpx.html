@@ -1,0 +1,46 @@
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="/static/breadcrumb.css">
+	<link rel="stylesheet" type="text/css" href="/static/common.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script src="/static/gpx.js"></script>
+	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+</head>
+<body>
+	<div id="header" class="letterpress">
+		<ul class="breadcrumb">
+			<li><a href="/">{{.Title}}</a></li>
+        	<li><a href="/gallerydetail/{{.GalleryID}}">{{.GalleryName}}</a></li>
+        	<li><a href="#">Route Details</a></li>
+		</ul>
+	</div>
+	<div id="content">
+        <div id="contentscroll">
+			<div id="gpxroute" style="position:relative; left:0; right:0; height:800px;">
+			</div>
+			<div id="elevgraph" style="position:relative; left:0; right:0; height:800px">
+			</div>
+		</div>
+	</div>
+
+	<script>
+		mapelem = document.getElementById("gpxroute");
+		function initMap() {
+			var map = new google.maps.Map(mapelem, {
+				center: {lat: 0, lng: 0},
+				zoom: 2,
+				disableDefaultUI: true,
+				mapTypeId: 'terrain'
+			})
+			$.ajax({url: '/gallerygpx/raw/{{.GalleryID}}', dataType: "xml",
+				success: function(data) {
+					parseGPX(data, map);
+				}
+			})
+		}
+	</script>
+
+	<script src="https://maps.googleapis.com/maps/api/js?key={{.APIKey}}&callback=initMap" async defer></script>
+</body>
+</html>
+	

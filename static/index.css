@@ -1,24 +1,5 @@
-#albums {
-	position: fixed;
-	overflow: hidden;
-	left: 0;
-	right: 0;
-	top: 60px;
-	bottom: 0;
-	margin-left: 30px;
-	margin-right: 30px;
-}
-
-#albumscroll {
-	position: absolute;
-	overflow-y: scroll;
-	left: 0;
-	height: 100%;
-	right: -17px;
-}
-
 .albumletterpress {
-	color:#2f4050;
+	color:#1f3040;
     font-family:Tahoma, Helvetica, Arial, sans-serif;
     text-align:center;
     text-shadow: 0px 1px 1px #52708C;
@@ -57,7 +38,7 @@
     left:0;
     right:0;
     height: 40px;
-    background: #384E64;
+    background: #485E74;
     margin: 10px;
     z-index: 3;
     box-shadow: 0 8px 6px -6px black;
@@ -69,8 +50,15 @@
 	box-shadow: 0 6px 6px -6px black;
     background: #4E7C6C;
 
-    color:#366756;
+    color:#265746;
     text-shadow: 0px 1px 1px #6F9487;
 
     cursor: pointer;
+}
+
+#overviewmap {
+ overflow: hidden;
+ left: 0;
+ right: 0;
+ height: 400px;
 }

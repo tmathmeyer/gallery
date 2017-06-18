@@ -10,8 +10,10 @@
 				<li><a href="#">{{.Title}}</a></li>
 			</ul>
 		</div>
-		<div id="albums">
-			<div id="albumscroll">
+		<div id="content">
+			<div id="contentscroll">
+				<div id="overviewmap">
+				</div>
 				{{with .Galleries}}
 				{{range .}}
 				<div class="albumcover">
@@ -27,6 +29,33 @@
 				{{end}}
 			</div>
 		</div>
+		<script>
+			function initMap() {
+				mapelem = document.getElementById("overviewmap");
+				var map = new google.maps.Map(mapelem, {
+					center: {lat: 0, lng: 0},
+					zoom: 2,
+					disableDefaultUI: true
+				})
+				bounds = new google.maps.LatLngBounds()
+				{{with .Galleries}}
+				{{range .}}
+				marker = new google.maps.Marker({
+					position: {lat: Number({{.GalleryLat}}), lng: Number({{.GalleryLng}})},
+					map: map,
+					title: '{{.GalleryName}}'
+				})
+				marker.addListener('click', function() {
+					location.href='/gallerydetail/{{.GalleryID}}'
+				})
+				bounds.extend(marker.getPosition());
+				{{end}}
+				{{end}}
+				map.setOptions({draggable: true, zoomControl: false, scrollwheel: true, disableDoubleClickZoom: true})
+				map.fitBounds(bounds)
+			}
+		</script>
+		<script src="https://maps.googleapis.com/maps/api/js?key={{.APIKey}}&callback=initMap" async defer></script>
 	</body>
 </html>
 

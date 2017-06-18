@@ -48,6 +48,8 @@ type GalleryDetail struct {
 	Images      []Image
 	Panos       []Image
 	Title       string
+	GpxPresent  bool
+	APIKey      string
 }
 
 func galleryDetailhandler(w http.ResponseWriter, r *http.Request) {
@@ -94,6 +96,11 @@ func galleryDetailhandler(w http.ResponseWriter, r *http.Request) {
 				}
 			}
 
+			var gpxPresent = false
+			if _, err := os.Stat(galleryDataDir + galleryID + "/route.gpx"); err == nil {
+				gpxPresent = true
+			}
+
 			var config Config
 			if _, err := toml.DecodeFile("config.toml", &config); err != nil {
 				fmt.Printf("%s\n", err)
@@ -105,7 +112,10 @@ func galleryDetailhandler(w http.ResponseWriter, r *http.Request) {
 				GalleryID:   Gallery.GalleryID,
 				Panos:       Panos,
 				Images:      Images,
-			    Title:       config.Title}
+				Title:       config.Title,
+				GpxPresent:  gpxPresent,
+				APIKey:      config.APIKey,
+			}
 
 			t, _ := template.ParseFiles("templates/detail.html")
 			t.Execute(w, Detail)
@@ -268,10 +278,54 @@ func galleryDataHandler(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, "./gallerydata/"+restPath)
 }
 
+func galleryGpxHandler(w http.ResponseWriter, r *http.Request) {
+	restPath := r.URL.Path[len("/gallerygpx/"):]
+	partsPath := strings.Split(restPath, "/")
+
+	if len(partsPath) == 1 {
+		var config Config
+		if _, err := toml.DecodeFile("config.toml", &config); err != nil {
+			fmt.Printf("%s\n", err)
+			http.NotFound(w, r)
+			return
+		}
+		var galleryID = partsPath[0]
+		for _, Gallery := range config.Galleries {
+			if Gallery.GalleryID == galleryID {
+				var Detail = GalleryDetail{
+					GalleryName: Gallery.GalleryName,
+					GalleryID:   Gallery.GalleryID,
+					Panos:       nil,
+					Images:      nil,
+					Title:       config.Title,
+					GpxPresent:  false,
+					APIKey:      config.APIKey,
+				}
+
+				t, _ := template.ParseFiles("templates/gpx.html")
+				t.Execute(w, Detail)
+				return
+			}
+		}
+		http.NotFound(w, r)
+		return
+	}
+
+	if len(partsPath) == 2 && partsPath[0] == "raw" {
+		gpxPath := galleryDataDir + partsPath[1] + "/route.gpx"
+		http.ServeFile(w, r, gpxPath)
+		return
+	}
+
+	fmt.Printf("partsPath[0] isn't raw, its (%s)\n", partsPath[0])
+	http.NotFound(w, r)
+}
+
 func main() {
 	http.HandleFunc("/", indexHandler)
 	http.HandleFunc("/gallerydetail/", galleryDetailhandler)
 	http.HandleFunc("/gallerydata/", galleryDataHandler)
+	http.HandleFunc("/gallerygpx/", galleryGpxHandler)
 	http.HandleFunc("/img/", imageHandler)
 	http.HandleFunc("/pan/", panoramicHandler)
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))

@@ -21,3 +21,22 @@ body {
     text-align:center;
     text-shadow: 0px 1px 1px #7290AC;
 }
+
+#content {
+	position: fixed;
+	overflow: hidden;
+	left: 0;
+	right: 0;
+	top: 60px;
+	bottom: 0;
+	margin-left: 30px;
+	margin-right: 30px;
+}
+
+#contentscroll {
+	position: absolute;
+	overflow-y: scroll;
+	left: 0;
+	height: 100%;
+	right: -17px;
+}
