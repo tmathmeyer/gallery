@@ -326,15 +326,16 @@ func galleryGpxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	urlParts := getPathParts(r, "/gallerygpx/")
-	galleryID := urlParts[0]
-
-	if err := getGallery(galleryID, &gallery); err != nil {
-		fmt.Printf("%s\n", err)
-		http.NotFound(w, r)
-		return
-	}
 
 	if len(urlParts) == 1 {
+		galleryID := urlParts[0]
+
+		if err := getGallery(galleryID, &gallery); err != nil {
+			fmt.Printf("%s\n", err)
+			http.NotFound(w, r)
+			return
+		}
+		
 		var Detail = GalleryDetail{
 			GalleryName: gallery.GalleryName,
 			GalleryID:   gallery.GalleryID,
