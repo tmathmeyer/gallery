@@ -83,11 +83,8 @@ func getGallery(galleryID string, gallery *Gallery) error {
 		if Gallery.GalleryID == galleryID {
 			*gallery = Gallery
 			return nil
-		} else {
-			fmt.Printf("(%s) != (%s)\n", galleryID, Gallery.GalleryID)
 		}
 	}
-	fmt.Printf("Failed to lookup: (%s)\n", galleryID)
 	return errors.New("Cannot get gallery; not present in configuration")
 }
 
