@@ -17,7 +17,7 @@ import (
 const serverPort string = ":8081"
 const galleryDataDir string = "./gallerydata/"
 const thumbPrefix string = "tn_"
-const copyrightHolder = "your.email@cock.li"
+const copyrightHolder = "tmathmeyer@gmail.com"
 
 type Gallery struct {
 	GalleryName string
