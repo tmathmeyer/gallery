@@ -3,6 +3,15 @@
     <link rel="stylesheet" type="text/css" href="/static/gallery.css">
     <link rel="stylesheet" type="text/css" href="/static/breadcrumb.css">
     <link rel="stylesheet" type="text/css" href="/static/common.css">
+    <script>
+      function load_image(gal, img) {
+        if(/android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(navigator.userAgent.toLowerCase())) {
+          window.open("/img/full/"+gal+"/"+img,'_blank');
+        } else {
+          window.open("/galleryraw/"+gal+"/"+img)
+        }
+      }
+    </script>
   </head>
   <body>
     <div id="header" class="letterpress">
@@ -22,7 +31,7 @@
         {{range .}}
         <div class="photo">
           <div class="photoimg">
-            <a href="/galleryraw/{{$.GalleryID}}/{{.URI}}">
+            <a onclick="load_image('{{$.GalleryID}}','{{.URI}}')">
               <image src="/img/small/{{$.GalleryID}}/{{.URI}}" alt="{{.Desc}}"></image>
             </a>
           </div>

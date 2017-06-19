@@ -18,4 +18,4 @@ Google maps API key
  8 run `server`  
 
 ##example
-https://hikes.tmathmeyer.me/
+https://hikes.tedm.io/
