@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"html/template"
 	"io/ioutil"
@@ -52,77 +53,113 @@ type GalleryDetail struct {
 	APIKey      string
 }
 
+type ImageTemplate struct {
+	Title       string
+	GalleryID   string
+	GalleryName string
+	URI         string
+	Image       string
+}
+
+func getConfig(config *Config) error {
+	if _, err := toml.DecodeFile("config.toml", config); err != nil {
+		fmt.Printf("%s\n", err)
+		return errors.New("Cannot get configuration!")
+	}
+	return nil
+}
+
+func getPathParts(r *http.Request, str string) []string {
+	restPath := r.URL.Path[len(str):]
+	return strings.Split(restPath, "/")
+}
+
+func getGallery(galleryID string, gallery *Gallery) error {
+	var config Config
+	if err := getConfig(&config); err != nil {
+		return errors.New("Cannot get gallery; configuration missing")
+	}
+	for _, Gallery := range config.Galleries {
+		if Gallery.GalleryID == galleryID {
+			*gallery = Gallery
+			return nil
+		} else {
+			fmt.Printf("(%s) != (%s)\n", galleryID, Gallery.GalleryID)
+		}
+	}
+	fmt.Printf("Failed to lookup: (%s)\n", galleryID)
+	return errors.New("Cannot get gallery; not present in configuration")
+}
+
 func galleryDetailhandler(w http.ResponseWriter, r *http.Request) {
 	var config Config
-	if _, err := toml.DecodeFile("config.toml", &config); err != nil {
+	var gallery Gallery
+	if err := getConfig(&config); err != nil {
 		fmt.Printf("%s\n", err)
 		http.NotFound(w, r)
 		return
 	}
-	galleryID := r.URL.Path[len("/gallerydetail/"):]
-	for _, Gallery := range config.Galleries {
-		if Gallery.GalleryID == galleryID {
-			img, _ := ioutil.ReadDir(galleryDataDir + galleryID + "/img")
-			pan, _ := ioutil.ReadDir(galleryDataDir + galleryID + "/pan")
 
-			var imgct = 0
-			var panct = 0
-			for _, f := range img {
-				if !strings.HasPrefix(f.Name(), thumbPrefix) {
-					imgct++
-				}
-			}
-			for _, f := range pan {
-				if !strings.HasPrefix(f.Name(), thumbPrefix) {
-					panct++
-				}
-			}
+	galleryID := getPathParts(r, "/gallerydetail/")[0]
 
-			var Images = make([]Image, imgct)
-			for i, f := range img {
-				if !strings.HasPrefix(f.Name(), thumbPrefix) {
-					Images[i] = Image{
-						URI:  f.Name(),
-						Desc: f.Name()}
-				}
-			}
+	if err := getGallery(galleryID, &gallery); err != nil {
+		fmt.Printf("%s\n", err)
+		http.NotFound(w, r)
+		return
+	}
 
-			var Panos = make([]Image, panct)
-			for i, f := range pan {
-				if !strings.HasPrefix(f.Name(), thumbPrefix) {
-					Panos[i] = Image{
-						URI:  f.Name(),
-						Desc: f.Name()}
-				}
-			}
+	img, _ := ioutil.ReadDir(galleryDataDir + galleryID + "/img")
+	pan, _ := ioutil.ReadDir(galleryDataDir + galleryID + "/pan")
 
-			var gpxPresent = false
-			if _, err := os.Stat(galleryDataDir + galleryID + "/route.gpx"); err == nil {
-				gpxPresent = true
-			}
-
-			var config Config
-			if _, err := toml.DecodeFile("config.toml", &config); err != nil {
-				fmt.Printf("%s\n", err)
-				http.NotFound(w, r)
-			}
-
-			var Detail = GalleryDetail{
-				GalleryName: Gallery.GalleryName,
-				GalleryID:   Gallery.GalleryID,
-				Panos:       Panos,
-				Images:      Images,
-				Title:       config.Title,
-				GpxPresent:  gpxPresent,
-				APIKey:      config.APIKey,
-			}
-
-			t, _ := template.ParseFiles("templates/detail.html")
-			t.Execute(w, Detail)
-			return
+	var imgct = 0
+	var panct = 0
+	for _, f := range img {
+		if !strings.HasPrefix(f.Name(), thumbPrefix) {
+			imgct++
 		}
 	}
-	http.NotFound(w, r)
+	for _, f := range pan {
+		if !strings.HasPrefix(f.Name(), thumbPrefix) {
+			panct++
+		}
+	}
+
+	var Images = make([]Image, imgct)
+	for i, f := range img {
+		if !strings.HasPrefix(f.Name(), thumbPrefix) {
+			Images[i] = Image{
+				URI:  f.Name(),
+				Desc: f.Name()}
+		}
+	}
+
+	var Panos = make([]Image, panct)
+	for i, f := range pan {
+		if !strings.HasPrefix(f.Name(), thumbPrefix) {
+			Panos[i] = Image{
+				URI:  f.Name(),
+				Desc: f.Name()}
+		}
+	}
+
+	var gpxPresent = false
+	if _, err := os.Stat(galleryDataDir + galleryID + "/route.gpx"); err == nil {
+		gpxPresent = true
+	}
+
+	var Detail = GalleryDetail{
+		GalleryName: gallery.GalleryName,
+		GalleryID:   gallery.GalleryID,
+		Panos:       Panos,
+		Images:      Images,
+		Title:       config.Title,
+		GpxPresent:  gpxPresent,
+		APIKey:      config.APIKey,
+	}
+
+	t, _ := template.ParseFiles("templates/detail.html")
+	t.Execute(w, Detail)
+	return
 }
 
 func imageHandler(w http.ResponseWriter, r *http.Request) {
@@ -279,46 +316,79 @@ func galleryDataHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func galleryGpxHandler(w http.ResponseWriter, r *http.Request) {
-	restPath := r.URL.Path[len("/gallerygpx/"):]
-	partsPath := strings.Split(restPath, "/")
+	var config Config
+	var gallery Gallery
 
-	if len(partsPath) == 1 {
-		var config Config
-		if _, err := toml.DecodeFile("config.toml", &config); err != nil {
-			fmt.Printf("%s\n", err)
-			http.NotFound(w, r)
-			return
-		}
-		var galleryID = partsPath[0]
-		for _, Gallery := range config.Galleries {
-			if Gallery.GalleryID == galleryID {
-				var Detail = GalleryDetail{
-					GalleryName: Gallery.GalleryName,
-					GalleryID:   Gallery.GalleryID,
-					Panos:       nil,
-					Images:      nil,
-					Title:       config.Title,
-					GpxPresent:  false,
-					APIKey:      config.APIKey,
-				}
-
-				t, _ := template.ParseFiles("templates/gpx.html")
-				t.Execute(w, Detail)
-				return
-			}
-		}
+	if err := getConfig(&config); err != nil {
+		fmt.Printf("%s\n", err)
 		http.NotFound(w, r)
 		return
 	}
 
-	if len(partsPath) == 2 && partsPath[0] == "raw" {
-		gpxPath := galleryDataDir + partsPath[1] + "/route.gpx"
+	urlParts := getPathParts(r, "/gallerygpx/")
+	galleryID := urlParts[0]
+
+	if err := getGallery(galleryID, &gallery); err != nil {
+		fmt.Printf("%s\n", err)
+		http.NotFound(w, r)
+		return
+	}
+
+	if len(urlParts) == 1 {
+		var Detail = GalleryDetail{
+			GalleryName: gallery.GalleryName,
+			GalleryID:   gallery.GalleryID,
+			Panos:       nil,
+			Images:      nil,
+			Title:       config.Title,
+			GpxPresent:  false,
+			APIKey:      config.APIKey,
+		}
+
+		t, _ := template.ParseFiles("templates/gpx.html")
+		t.Execute(w, Detail)
+		return
+	}
+
+	if len(urlParts) == 2 && urlParts[0] == "raw" {
+		gpxPath := galleryDataDir + urlParts[1] + "/route.gpx"
 		http.ServeFile(w, r, gpxPath)
 		return
 	}
 
-	fmt.Printf("partsPath[0] isn't raw, its (%s)\n", partsPath[0])
+	fmt.Printf("urlParts[0] isn't raw, its (%s)\n", urlParts[0])
 	http.NotFound(w, r)
+}
+
+func galleryRawHandler(w http.ResponseWriter, r *http.Request) {
+	var config Config
+	var gallery Gallery
+
+	if err := getConfig(&config); err != nil {
+		fmt.Printf("%s\n", err)
+		http.NotFound(w, r)
+		return
+	}
+
+	urlParts := getPathParts(r, "/galleryraw/")
+	galleryID := urlParts[0]
+
+	if err := getGallery(galleryID, &gallery); err != nil {
+		fmt.Printf("%s\n", err)
+		http.NotFound(w, r)
+		return
+	}
+
+	var Detail = ImageTemplate{
+		Title:       config.Title,
+		GalleryID:   gallery.GalleryID,
+		GalleryName: gallery.GalleryName,
+		URI:         "/img/full/" + gallery.GalleryID + "/" + urlParts[1],
+		Image:       urlParts[1],
+	}
+
+	t, _ := template.ParseFiles("templates/image.html")
+	t.Execute(w, Detail)
 }
 
 func main() {
@@ -326,6 +396,7 @@ func main() {
 	http.HandleFunc("/gallerydetail/", galleryDetailhandler)
 	http.HandleFunc("/gallerydata/", galleryDataHandler)
 	http.HandleFunc("/gallerygpx/", galleryGpxHandler)
+	http.HandleFunc("/galleryraw/", galleryRawHandler)
 	http.HandleFunc("/img/", imageHandler)
 	http.HandleFunc("/pan/", panoramicHandler)
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
