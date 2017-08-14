@@ -1,0 +1,54 @@
+<html>
+	<head>
+		<link rel="stylesheet" type="text/css" href="/static/login.css">
+		<link rel="stylesheet" type="text/css" href="/static/common.css">
+		<link href='http://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
+	</head>
+<body>
+	<br />
+	<br />
+	<br />
+	<br />
+	<br />
+	<div class="login-block">
+		<h1>Login</h1>
+		<input type="text" value="" placeholder="Username" id="username" />
+		<input type="password" value="" placeholder="Password" id="password" />
+		<button onclick="login()">Submit</button>
+	</div>
+	<script>
+		function post(path, params, method) {
+			method = method || "post"; // Set method to post by default if not specified.
+
+			// The rest of this code assumes you are not using a library.
+			// It can be made less wordy if you use one.
+			var form = document.createElement("form");
+			form.setAttribute("method", method);
+			form.setAttribute("action", path);
+
+			for(var key in params) {
+				if(params.hasOwnProperty(key)) {
+					var hiddenField = document.createElement("input");
+					hiddenField.setAttribute("type", "hidden");
+					hiddenField.setAttribute("name", key);
+					hiddenField.setAttribute("value", params[key]);
+
+					form.appendChild(hiddenField);
+				 }
+			}
+
+			document.body.appendChild(form);
+			form.submit();
+		}
+
+		function login() {
+			username = document.getElementById('username').value
+			password = document.getElementById('password').value
+			post("/auth/handle", {
+				"username": username,
+				"password": password
+			})
+		}
+	</script>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="/static/manage.css">
+	<link rel="stylesheet" type="text/css" href="/static/gallerytile.css">
+	<link rel="stylesheet" type="text/css" href="/static/breadcrumb.css">
+	<link rel="stylesheet" type="text/css" href="/static/common.css">
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script src="/static/manage.js"></script>
+</head>
+<body>
+	<div id="contentscroll" class="vertical-menu">
+		{{with .Galleries}}
+		{{range .}}
+		<div class="albumcover">
+			<div class="coverimg">
+				<image src="/i/T/{{.Path}}/{{.Splash}}"></image>
+			</div>
+			<div class="shadow"></div>
+			<div id="{{.Path}}" class="covertitle albumletterpress albummanager">
+				{{.Name}}
+				<input class="hidden __prop_path" value="{{.Path}}">
+				<input class="hidden __prop_name" value="{{.Name}}">
+				<input class="hidden __prop_splash" value="{{.Splash}}">
+			</div>
+		</div>
+		{{end}}
+		{{end}}
+		<div class="albumcover">
+			<div class="coverimg">
+				<image src="/static/tn_new.png"></image>
+			</div>
+			<div class="shadow"></div>
+			<div id="createButton", class="covertitle albumletterpress">
+				Create New Gallery
+			</div>
+		</div>
+	</div>
+	<div id="galleryeditor" class="hidden">
+		<form class="fieldset indent" onsubmit="return false;">
+		  	<input id="gallerynamefield" class="albumletterpress" type="text" value="<<galleryname>>">
+			<button id="gallerynamesubmit">Change Name</button>
+		</form>
+		<hr />
+		<div id="micropics">
+			<div class="tilesquare">
+				<form id="imguploadform" enctype="multipart/form-data">
+					<input id="imgfpkr" name="newimage" type="file" />
+					<input id="imgupload" type="button" value="Upload" />
+				</form>
+				<progress></progress>
+			</div>
+<!--
+			<div class="tilesquare" imagename="feh_014426_000025_IMG_20161028_165109.jpg" gallerypath="goldmyer" imagedescription="feh_014426_000025_IMG_20161028_165109.jpg" style="background-image: url(&quot;/i/T/goldmyer/feh_014426_000025_IMG_20161028_165109.jpg&quot;);">
+				<button onclick="setThumbnail(this);">Set Thumbnail</button>
+				<button onclick="changeDescription(this)">Change Description</button>
+			</div>
+		-->
+		</div>
+	</div>
+</body>
+</html>

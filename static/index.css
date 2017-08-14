@@ -1,64 +1,29 @@
-.albumletterpress {
-	color:#1f3040;
-    font-family:Tahoma, Helvetica, Arial, sans-serif;
-    text-align:center;
-    text-shadow: 0px 1px 1px #52708C;
-}
-
-.albumcover {
-	position: relative;
-	float: left;
-	background: #2f4050;
-	width: 380px;
-	margin: 10px;
-	height: 280px;
-	margin-bottom:30px;
-}
-
-.coverimg {
-	overflow: hidden;
-    object-fit: contain;
-    width: 100%;
-    height: 100%;
-}
-
-.shadow {
-	position: absolute;
-    width: 100%;
-    height: 100%;
-    box-shadow: inset 0 0 5px #000;
-    top: 0;
-    left: 0;
-    z-index: 2;
-}
-
-.covertitle {
-	position: absolute;
-    bottom:-25px;
-    left:0;
-    right:0;
-    height: 40px;
-    background: #485E74;
-    margin: 10px;
-    z-index: 3;
-    box-shadow: 0 8px 6px -6px black;
-	font-size:2em;
-	line-height: 40px
-}
-
-.albumcover:hover .covertitle {
-	box-shadow: 0 6px 6px -6px black;
-    background: #4E7C6C;
-
-    color:#265746;
-    text-shadow: 0px 1px 1px #6F9487;
-
-    cursor: pointer;
-}
-
 #overviewmap {
  overflow: hidden;
  left: 0;
  right: 0;
  height: 400px;
+}
+
+#login {
+    position: fixed;
+    right: 0;
+    top: 0;
+    height: 60px;
+    width: 60px;
+    color: #265746;
+}
+
+#login i {
+    padding: 5px;
+    height: 50px;
+    width: 50px;
+    line-height: 50px;
+    font-size: 40px;
+}
+
+#login:hover i {
+    text-shadow: 0px 0px 0px #6F9487;
+    color: #fff;
+    cursor: pointer;
 }

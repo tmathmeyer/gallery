@@ -3,26 +3,35 @@
 		<link rel="stylesheet" type="text/css" href="/static/index.css">
 		<link rel="stylesheet" type="text/css" href="/static/breadcrumb.css">
 		<link rel="stylesheet" type="text/css" href="/static/common.css">
+		<link rel="stylesheet" type="text/css" href="/static/gallerytile.css">
+		<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 	</head>
 	<body>
 		<div id="header" class="letterpress">
 			<ul class="breadcrumb">
 				<li><a href="#">{{.Title}}</a></li>
 			</ul>
+			<a href="/manage">
+				<div id="login">
+					<i class="material-icons letterpress">fingerprint</i>
+				</div>
+			</a>
 		</div>
 		<div id="content">
 			<div id="contentscroll">
+				<!--
 				<div id="overviewmap">
 				</div>
+				-->
 				{{with .Galleries}}
 				{{range .}}
 				<div class="albumcover">
 					<div class="coverimg">
-						<image src="gallerydata/{{.GalleryID}}/splash.jpg"></image>
+						<image src="/i/T/{{.Path}}/{{.Splash}}"></image>
 					</div>
 					<div class="shadow"></div>
-					<div class="covertitle albumletterpress" onclick="location.href='/gallerydetail/{{.GalleryID}}'">
-						{{.GalleryName}}
+					<div class="covertitle albumletterpress" onclick="location.href='/g/{{.Path}}'">
+						{{.Name}}
 					</div>
 				</div>
 				{{end}}
@@ -41,12 +50,12 @@
 				{{with .Galleries}}
 				{{range .}}
 				marker = new google.maps.Marker({
-					position: {lat: Number({{.GalleryLat}}), lng: Number({{.GalleryLng}})},
+					position: {lat: Number({{.Lat}}), lng: Number({{.Lon}})},
 					map: map,
-					title: '{{.GalleryName}}'
+					title: '{{.Name}}'
 				})
 				marker.addListener('click', function() {
-					location.href='/gallerydetail/{{.GalleryID}}'
+					location.href='/g/{{.Path}}'
 				})
 				bounds.extend(marker.getPosition());
 				{{end}}

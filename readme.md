@@ -1,21 +1,19 @@
-# Gallery
-Just a simple gallery app written in golang.  
+Gallery
+=======
+
+A really simple host-it-yourself photo gallery project
 
 ## Dependancies
-libvips (for the vipsthumbnail binary)  
-golang  
-BurntSushi: toml (go get github.com/BurntSushi/toml)  
-Google maps API key  
+ - `go get github.com/dgrijalva/jwt-go`
+ - `go get github.com/mattn/go-sqlite3`
+ - `go get golang.org/x/crypto/bcrypt`
 
-##setup
- 1 copy config.toml.example to config.toml  
- 2 put your gmaps api key into config.toml  
- 3 make a directory called 'gallerydata'  
- 4 in gallery data make a directory for each album  
- 5 in each album make two directories: 'img', 'pan'  
- 6 put images in to the img dir and panoramics into the pan dir  
- 7 run `go build server.go`  
- 8 run `server`  
-
-##example
-https://hikes.tedm.io/
+## Installation
+ - See dependancies section for what to install
+ - Copy `setup.go.template` to `setup.go`
+ - Edit `setup.go` with your desired information
+   - Note: The private key field is _not_ a password. You never need to remember it, and you should generate a random base64 string, ideally more than 40 characters in length.
+ - run `make setup`
+ - run `make`
+ - run the `server` binary
+ - navigate to `localhost:8081/` and press the fingerprint icon in the top right to start adding photos.

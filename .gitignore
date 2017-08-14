@@ -1,11 +1,7 @@
-old_index.html
-gallerydata/
-config.toml
-
-# vs code settings
-.vscode/
+test/
+setup.go
 
 # Binaries
-server.exe
 server
 vipsthumbnail
+live.sqlite

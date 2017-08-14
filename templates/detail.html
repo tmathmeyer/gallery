@@ -8,7 +8,7 @@
         if(/android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(navigator.userAgent.toLowerCase())) {
           window.open("/img/full/"+gal+"/"+img,'_blank');
         } else {
-          window.open("/galleryraw/"+gal+"/"+img)
+          window.open("/v/image/"+gal+"/"+img, '_self');
         }
       }
     </script>
@@ -31,19 +31,8 @@
         {{range .}}
         <div class="photo">
           <div class="photoimg">
-            <a onclick="load_image('{{$.GalleryID}}','{{.URI}}')">
-              <image src="/img/small/{{$.GalleryID}}/{{.URI}}" alt="{{.Desc}}"></image>
-            </a>
-          </div>
-        </div>
-        {{end}}
-        {{end}}
-        {{with .Panos}}
-        {{range .}}
-        <div class="photo">
-          <div class="photoimg">
-            <a target="_blank" href="/pan/full/{{$.GalleryID}}/{{.URI}}">
-              <image src="/pan/small/{{$.GalleryID}}/{{.URI}}" alt="{{.Desc}}"></image>
+            <a onclick="load_image('{{$.GalleryID}}','{{.Name}}')">
+              <image src="/i/T/{{$.GalleryID}}/{{.Name}}" alt="{{.Descr}}"></image>
             </a>
           </div>
         </div>

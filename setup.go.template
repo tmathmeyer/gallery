@@ -1,0 +1,26 @@
+package main
+
+import (
+    _ "github.com/mattn/go-sqlite3"
+	"log"
+	"os"
+)
+
+func main() {
+	db, err := open_database("./live.sqlite")
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
+
+	add_metadata(db, "title", "<your domain name here>")
+	add_metadata(db, "apikey", "<your google maps api key here>")
+	add_metadata(db, "galleryData", "<a directory to store photos>")
+	add_metadata(db, "secret", "<Private key>")
+
+	add_admin(db, "<admin username>", "<admin password>")
+
+	os.Mkdir(getMetadataValue("galleryData"), os.ModePerm)
+}
+

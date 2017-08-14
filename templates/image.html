@@ -10,8 +10,8 @@
         <div id="header" class="letterpress">
             <ul class="breadcrumb">
                 <li><a href="/">{{.Title}}</a></li>
-                <li><a href="/gallerydetail/{{.GalleryID}}">{{.GalleryName}}</a></li>
-                <li><a href="#">{{.Image}}</a></li>
+                <li><a href="/g/{{.GalleryPath}}">{{.GalleryName}}</a></li>
+                <li><a href="#">{{.ImagePath}}</a></li>
             </ul>
         </div>
         <div id="content">
@@ -95,7 +95,7 @@ window.onload = function(){
     canvas.addEventListener('mousewheel',handleScroll,false);
 };
 
-gkhead.src = '{{.URI}}';
+gkhead.src = '{{.ImageURL}}';
 
 // Adds ctx.getTransform() - returns an SVGMatrix
 // Adds ctx.transformedPoint(x,y) - returns an SVGPoint
