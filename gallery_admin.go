@@ -1,16 +1,16 @@
 package main
 
 import (
-	"net/http"
 	"database/sql"
-	"time"
-	"html/template"
-	"fmt"
-	"strings"
-	"unicode"
-	"os"
-	"io"
 	"encoding/json"
+	"fmt"
+	"html/template"
+	"io"
+	"net/http"
+	"os"
+	"strings"
+	"time"
+	"unicode"
 )
 
 func loginPageHandler() http.Handler {
@@ -45,10 +45,9 @@ func loginRequestHandler(db *sql.DB) http.Handler {
 				http.Error(w, "Unauthorized", 400)
 				return
 			}
-			
 
 			expiration := time.Now().Add(365 * 24 * time.Hour)
-			cookie := http.Cookie{Name: "jwt", Value:token, Expires:expiration, Path:"/"}
+			cookie := http.Cookie{Name: "jwt", Value: token, Expires: expiration, Path: "/"}
 			http.SetCookie(w, &cookie)
 			directToManagement().ServeHTTP(w, r)
 		} else {
@@ -71,9 +70,9 @@ func galleryManagementHandler(db *sql.DB) http.Handler {
 		title := getMetadataValue(db, "title")
 		apiKey := getMetadataValue(db, "mapapikey")
 
-		var index = IndexModel {
-			Title: title,
-			APIKey: apiKey,
+		var index = IndexModel{
+			Title:     title,
+			APIKey:    apiKey,
 			Galleries: galleries}
 		t.Execute(w, index)
 	})
@@ -171,7 +170,7 @@ func apiImageHandler(db *sql.DB) http.Handler {
 			w.Header().Set("Content-Type", "application/json")
 			w.Write(jData)
 			return
-		
+
 		case "PUT":
 			r.ParseForm()
 
@@ -211,7 +210,6 @@ func apiGalleryHandler(db *sql.DB) http.Handler {
 			//symlink the default splash
 			//add_gallery(db *sql.DB, name string, path string, 90, 0, "placeholder.png")
 
-			
 			prefix := getMetadataValue(db, "galleryData")
 			if prefix == "" {
 				http.NotFound(w, r)
@@ -239,11 +237,9 @@ func apiGalleryHandler(db *sql.DB) http.Handler {
 
 			add_gallery(db, gn[0], localpath, 90, 0, "placeholder.png")
 
-
 			fmt.Printf("Creating gallery: %s\n", gn[0])
 			http.Error(w, "OK", 200)
 			return
-
 
 		case "PUT":
 			path := getPathParts(r, "/a/g/", 1)
@@ -253,7 +249,7 @@ func apiGalleryHandler(db *sql.DB) http.Handler {
 			}
 			gallPath := path[0]
 			r.ParseForm()
-			
+
 			props := []string{"name", "splash"}
 			for _, prop := range props {
 				gn := r.Form[prop]
@@ -273,12 +269,11 @@ func apiGalleryHandler(db *sql.DB) http.Handler {
 	})
 }
 
-
 func setupPrivateHandlers(db *sql.DB) {
 	http.Handle("/manage", verify_authentication_middleware(galleryManagementHandler(db), loginPageHandler(), db))
 	http.Handle("/auth/handle", loginRequestHandler(db))
 
-	apiTypes := map[string]http.Handler {
+	apiTypes := map[string]http.Handler{
 		"g": apiGalleryHandler(db),
 		"i": apiImageHandler(db),
 		"u": apiImageUploadHandler(db),

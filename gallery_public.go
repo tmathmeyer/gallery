@@ -1,15 +1,15 @@
 package main
 
 import (
-    "database/sql"
+	"database/sql"
 	"fmt"
 	"html/template"
 	"log"
 	"net/http"
 	"os"
 	"os/exec"
-	"strings"
 	"path/filepath"
+	"strings"
 )
 
 const serverPort string = ":8081"
@@ -29,12 +29,12 @@ type GalleryDetailModel struct {
 }
 
 type CustomImageViewModel struct {
-	Title             string
-	GalleryName       string
-	GalleryPath       string
-	ImagePath         string
-	ImageDescription  string
-	ImageURL          string
+	Title            string
+	GalleryName      string
+	GalleryPath      string
+	ImagePath        string
+	ImageDescription string
+	ImageURL         string
 }
 
 type IndexModel struct {
@@ -42,7 +42,6 @@ type IndexModel struct {
 	APIKey    string
 	Galleries []Gallery
 }
-
 
 // Test if file exists
 func exists(path string) bool {
@@ -71,7 +70,7 @@ func imageHandler(db *sql.DB) http.Handler {
 			return
 		}
 
-	    // #security
+		// #security
 		for _, dirname := range url_data[:len(url_data)-1] {
 			if strings.HasPrefix(dirname, ".") {
 				http.NotFound(w, r)
@@ -109,8 +108,8 @@ func imageHandler(db *sql.DB) http.Handler {
 
 		if url_data[0] != "F" {
 			original_path := galleryData + url_data[1] + "/" + url_data[2]
-			pattern := prefix + "%s"+filepath.Ext(original_path)
-			resize_and_serve(w, r, original_path, image_path, pattern, size)	
+			pattern := prefix + "%s" + filepath.Ext(original_path)
+			resize_and_serve(w, r, original_path, image_path, pattern, size)
 		}
 	})
 }
@@ -177,7 +176,7 @@ func customViewHandler(db *sql.DB) http.Handler {
 		viewdata := getPathParts(r, "/v/", 3)
 		galleryID := viewdata[1]
 		photoName := viewdata[2]
-	
+
 		var gallery Gallery
 		if err := getGallery(db, galleryID, &gallery); err != nil {
 			fmt.Printf("%s\n", err)
@@ -195,13 +194,13 @@ func customViewHandler(db *sql.DB) http.Handler {
 
 		title := getMetadataValue(db, "title")
 
-		var Detail = CustomImageViewModel {
-			Title: title,
-			GalleryName: gallery.Name,
-			GalleryPath: galleryID,
-			ImagePath: photoName,
+		var Detail = CustomImageViewModel{
+			Title:            title,
+			GalleryName:      gallery.Name,
+			GalleryPath:      galleryID,
+			ImagePath:        photoName,
 			ImageDescription: photo.Descr,
-			ImageURL: "/i/F/" + galleryID + "/" + photoName,
+			ImageURL:         "/i/F/" + galleryID + "/" + photoName,
 		}
 
 		t, _ := template.ParseFiles("templates/image.html")
@@ -223,14 +222,13 @@ func indexHandler(db *sql.DB) http.Handler {
 		title := getMetadataValue(db, "title")
 		apiKey := getMetadataValue(db, "mapapikey")
 
-		var index = IndexModel {
-			Title: title,
-			APIKey: apiKey,
+		var index = IndexModel{
+			Title:     title,
+			APIKey:    apiKey,
 			Galleries: galleries}
 		t.Execute(w, index)
 	})
 }
-
 
 func setupPublicHandlers(db *sql.DB) {
 	http.Handle("/", indexHandler(db))
@@ -239,7 +237,6 @@ func setupPublicHandlers(db *sql.DB) {
 	http.Handle("/i/", imageHandler(db))
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
 }
-
 
 func main() {
 	db, err := open_database("./live.sqlite")

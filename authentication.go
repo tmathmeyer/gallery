@@ -1,11 +1,11 @@
 package main
 
 import (
-	"net/http"
-	"github.com/dgrijalva/jwt-go"
-	"time"
-    "database/sql"
+	"database/sql"
 	"fmt"
+	"github.com/dgrijalva/jwt-go"
+	"net/http"
+	"time"
 )
 
 func UnauthorizedFailPage() http.Handler {
@@ -69,7 +69,7 @@ func get_user_authentication(bearer_token string, secret []byte) (string, error)
 func get_authentication_token(secret []byte, user string) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"user": user,
-		"nbf": time.Date(2015, 10, 10, 12, 0, 0, 0, time.UTC).Unix(),
+		"nbf":  time.Date(2015, 10, 10, 12, 0, 0, 0, time.UTC).Unix(),
 	})
 
 	return token.SignedString(secret)

@@ -1,12 +1,12 @@
 package main
 
 import (
-    "database/sql"
+	"database/sql"
 	"errors"
-    _ "github.com/mattn/go-sqlite3"
+	_ "github.com/mattn/go-sqlite3"
+	"golang.org/x/crypto/bcrypt"
 	"log"
-    "os"
-    "golang.org/x/crypto/bcrypt"
+	"os"
 )
 
 type Gallery struct {
@@ -30,8 +30,8 @@ func getPhotosByGallery(db *sql.DB, galleryID string) ([]Photo, error) {
 	}
 	defer rows.Close()
 
-    var Photos []Photo
-    for rows.Next() {
+	var Photos []Photo
+	for rows.Next() {
 		var description string
 		var name string
 		var gallery string
@@ -40,8 +40,8 @@ func getPhotosByGallery(db *sql.DB, galleryID string) ([]Photo, error) {
 			return nil, err
 		}
 		Photos = append(Photos, Photo{
-			Name:  name,
-			Descr: description,
+			Name:    name,
+			Descr:   description,
 			Gallery: gallery,
 		})
 	}
@@ -54,10 +54,10 @@ func getGalleries(db *sql.DB) ([]Gallery, error) {
 		return nil, err
 	}
 	defer rows.Close()
-    
-    var Galleries []Gallery
-    for rows.Next() {
-    	var name string
+
+	var Galleries []Gallery
+	for rows.Next() {
+		var name string
 		var path string
 		var lat float64
 		var lon float64
@@ -66,15 +66,15 @@ func getGalleries(db *sql.DB) ([]Gallery, error) {
 		if err != nil {
 			return nil, err
 		}
-		Galleries = append(Galleries, Gallery {
-			Name: name,
-			Path: path,
-			Lat: lat,
-			Lon: lon,
+		Galleries = append(Galleries, Gallery{
+			Name:   name,
+			Path:   path,
+			Lat:    lat,
+			Lon:    lon,
 			Splash: splash,
 		})
-    }
-    return Galleries, nil
+	}
+	return Galleries, nil
 }
 
 func getPhotosByGalleryAndName(db *sql.DB, galleryID string, photoName string, photo *Photo) error {
@@ -84,7 +84,7 @@ func getPhotosByGalleryAndName(db *sql.DB, galleryID string, photoName string, p
 	}
 	defer rows.Close()
 
-    for rows.Next() {
+	for rows.Next() {
 		var description string
 		var name string
 		var gallery string
@@ -144,24 +144,24 @@ func getGallery(db *sql.DB, galleryID string, gallery *Gallery) error {
 }
 
 func file_exists(filename string) bool {
-    _, err := os.Stat(filename);
-    return err == nil
+	_, err := os.Stat(filename)
+	return err == nil
 }
 
 func open_database(filename string) (*sql.DB, error) {
 	var fileExists = file_exists(filename)
 
-    db, err := sql.Open("sqlite3", filename)
-    
-    if err != nil {
-        return nil, err
-    }
+	db, err := sql.Open("sqlite3", filename)
 
-    if fileExists {
-    	return db, nil
-    }
+	if err != nil {
+		return nil, err
+	}
 
-    create_tables := `
+	if fileExists {
+		return db, nil
+	}
+
+	create_tables := `
     CREATE TABLE galleries (
          path    TEXT PRIMARY KEY,
          name    TEXT,
@@ -186,7 +186,7 @@ func open_database(filename string) (*sql.DB, error) {
      );
     `
 
-    _, err = db.Exec(create_tables)
+	_, err = db.Exec(create_tables)
 	if err != nil {
 		return nil, err
 	}
@@ -228,7 +228,7 @@ func add_photo(db *sql.DB, path string, description string, gallery string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	
+
 	tx.Commit()
 }
 
@@ -244,7 +244,7 @@ func set_image_description_by_name_and_gallery(db *sql.DB, gallery string, image
 	if err != nil {
 		return err
 	}
-	
+
 	tx.Commit()
 	return nil
 }
@@ -260,12 +260,12 @@ func add_gallery(db *sql.DB, name string, path string, lat float64, lon float64,
 	if err != nil {
 		log.Fatal(err)
 	}
-	
+
 	tx.Commit()
 }
 
 func set_gallery_prop(db *sql.DB, path string, prop string, value string) error {
-	query := "UPDATE galleries SET "+prop+"=? WHERE path=?"
+	query := "UPDATE galleries SET " + prop + "=? WHERE path=?"
 	stmt, tx, err := get_prepared_transaction(db, query)
 	if err != nil {
 		return err
@@ -276,7 +276,7 @@ func set_gallery_prop(db *sql.DB, path string, prop string, value string) error 
 	if err != nil {
 		return err
 	}
-	
+
 	tx.Commit()
 	return nil
 }
@@ -298,7 +298,7 @@ func add_admin(db *sql.DB, name string, pass string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	
+
 	tx.Commit()
 }
 
@@ -313,7 +313,7 @@ func add_metadata(db *sql.DB, key string, value string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	
+
 	tx.Commit()
 }
 
