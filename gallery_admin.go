@@ -8,6 +8,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strings"
 	"time"
 	"unicode"
@@ -125,7 +126,15 @@ func apiImageUploadHandler(db *sql.DB) http.Handler {
 
 			defer file.Close()
 
-			writeToPath := prefix + galleryPath + "/" + handler.Filename
+			FileExtension := filepath.Ext(handler.Filename)
+			Filename := strings.TrimSuffix(handler.Filename, FileExtension)
+
+			writeToPath := prefix + galleryPath + "/" + Filename + FileExtension
+
+			for file_exists(writeToPath) {
+				Filename = Filename + "0"
+				writeToPath = prefix + galleryPath + "/" + Filename + FileExtension
+			}
 
 			f, err := os.OpenFile(writeToPath, os.O_WRONLY|os.O_CREATE, 0666)
 			if err != nil {
@@ -137,8 +146,8 @@ func apiImageUploadHandler(db *sql.DB) http.Handler {
 			defer f.Close()
 			io.Copy(f, file)
 
-			add_photo(db, handler.Filename, handler.Filename, galleryPath)
-			http.Error(w, "OK", 200)
+			add_photo(db, Filename+FileExtension, Filename+FileExtension, galleryPath)
+			http.Error(w, Filename+FileExtension, 200)
 			return
 		}
 	})

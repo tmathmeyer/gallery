@@ -18,6 +18,7 @@ function makePhotoSquares(photos) {
 function getPhotoDiv(photo) {
 	var div = document.createElement("div");
 	urlImage = "url('/i/T/"+photo.Gallery+"/"+photo.Name+"')"
+	console.log(urlImage)
 	div.style.backgroundImage = urlImage;
 	div.className="tilesquare"
 	div.setAttribute("imageName", photo.Name);
@@ -77,7 +78,34 @@ function changeDescription(elem) {
 	}
 }
 
+function load_gallery_for_changes(elem) {
+	var name = elem_prop(elem, "name");
+	var path = elem_prop(elem, "path");
+	var splash = elem_prop(elem, "splash");
+
+	document.location.hash = elem.id
+
+	$("#gallerynamefield").val(name)
+	$("#gallerynamesubmit").attr("path", path)
+	$("#galleryeditor").removeClass("hidden")
+
+
+	$.ajax({
+		url: '/a/i/'+path,
+		type: 'GET',
+		headers: {"Authorization": "Bearer " +getCookie("jwt")},
+		success: function(data) {
+			makePhotoSquares(data)
+		}
+	})
+}
+
 $(document).ready(function() {
+	if (document.location.hash) {
+		elem = document.getElementById(document.location.hash.slice(1))
+		load_gallery_for_changes(elem)
+	}
+
 	$("#createButton").click(function(e) {
 		newname = prompt("Gallery name:", "")
 		if (newname) {
@@ -96,25 +124,7 @@ $(document).ready(function() {
 	});
 
 	$(".albummanager").click(function(){
-		var name = elem_prop(this, "name");
-		var path = elem_prop(this, "path");
-		var splash = elem_prop(this, "splash");
-
-		$("#gallerynamefield").val(name)
-		$("#gallerynamesubmit").attr("path", path)
-		$("#galleryeditor").removeClass("hidden")
-
-
-		$.ajax({
-			url: '/a/i/'+path,
-			type: 'GET',
-			headers: {"Authorization": "Bearer " +getCookie("jwt")},
-			success: function(data) {
-				makePhotoSquares(data)
-			}
-		})
-
-
+		load_gallery_for_changes(this)
 	});
 
 	$("#gallerynamesubmit").click(function() {
@@ -167,6 +177,19 @@ $(document).ready(function() {
 				}
 				return myXhr;
 			},
+			success: function(data) {
+				elem = document.getElementById("micropics")
+				data = data.slice(0, -1)
+				elem.appendChild(getPhotoDiv({
+					"Gallery": $("#gallerynamesubmit").attr("path"),
+					"Name":data,
+					"Descr":data
+				}))
+				$('progress').attr({
+					value: 0,
+					max: 100,
+				});
+			}
 		});
 	});
 });
