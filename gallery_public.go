@@ -84,15 +84,18 @@ func imageHandler(db *sql.DB) http.Handler {
 		switch url_data[0] {
 		case "F":
 			prefix = ""
+		case "L":
+			prefix = "lg_"
+			size = "2560"
 		case "M":
 			prefix = "md_"
-			size = "1080"
+			size = "1920"
 		case "S":
 			prefix = "sm_"
-			size = "600"
+			size = "1280"
 		case "T":
 			prefix = "tn_"
-			size = "450"
+			size = "640"
 		default:
 			prefix = "tn_"
 		}
