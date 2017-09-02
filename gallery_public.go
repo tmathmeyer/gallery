@@ -220,7 +220,7 @@ func indexHandler(db *sql.DB) http.Handler {
 		}
 
 		title := getMetadataValue(db, "title")
-		apiKey := getMetadataValue(db, "mapapikey")
+		apiKey := getMetadataValue(db, "apikey")
 
 		var index = IndexModel{
 			Title:     title,
