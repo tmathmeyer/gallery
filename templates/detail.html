@@ -22,19 +22,11 @@
     </div>
     <div id="content">
       <div id="contentscroll">
-        {{if .GpxPresent}}
-        <div id="gpxviewer" class="letterpress" onclick="location.href='/gallerygpx/{{.GalleryID}}'">
-          View Route Details
-        </div>
-        {{end}}
         {{with .Images}}
         {{range .}}
-        <div class="photo">
-          <div class="photoimg">
-            <a onclick="load_image('{{$.GalleryID}}','{{.Name}}')">
-              <image src="/i/T/{{$.GalleryID}}/{{.Name}}" alt="{{.Descr}}"></image>
-            </a>
-          </div>
+        <div class="photo"
+             style="background: url(/i/T/{{$.GalleryID}}/{{.Name}}); background-size:cover;"
+             onclick="load_image('{{$.GalleryID}}','{{.Name}}')">
         </div>
         {{end}}
         {{end}}

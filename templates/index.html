@@ -5,6 +5,9 @@
 		<link rel="stylesheet" type="text/css" href="/static/common.css">
 		<link rel="stylesheet" type="text/css" href="/static/gallerytile.css">
 		<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+		<script src="/static/gpx.js"></script>
 	</head>
 	<body>
 		<div id="header" class="letterpress">
@@ -19,17 +22,14 @@
 		</div>
 		<div id="content">
 			<div id="contentscroll">
-				<!--
-				<div id="overviewmap">
-				</div>
-				-->
+				<div class="albumcover" id="overviewmap"
+				     style="grid-column: 1 / 3; grid-row: 1 / 3;">
+				 </div>
 				{{with .Galleries}}
 				{{range .}}
-				<div class="albumcover">
-					<div class="coverimg">
-						<image src="/i/T/{{.Path}}/{{.Splash}}"></image>
-					</div>
-					<div class="shadow"></div>
+				<div class="albumcover"
+				     style="background: url(/i/T/{{.Path}}/{{.Splash}});
+				            background-size:cover;">
 					<div class="covertitle albumletterpress" onclick="location.href='/g/{{.Path}}'">
 						{{.Name}}
 					</div>
@@ -41,27 +41,26 @@
 		<script>
 			function initMap() {
 				mapelem = document.getElementById("overviewmap");
-				var map = new google.maps.Map(mapelem, {
-					center: {lat: 0, lng: 0},
-					zoom: 2,
-					disableDefaultUI: true
-				})
 				bounds = new google.maps.LatLngBounds()
-				{{with .Galleries}}
-				{{range .}}
-				marker = new google.maps.Marker({
-					position: {lat: Number({{.Lat}}), lng: Number({{.Lon}})},
-					map: map,
-					title: '{{.Name}}'
+
+				$.get('/static/topo.json', function(data) {
+					var map = new google.maps.Map(mapelem, {
+						center: {lat: 0, lng: 0},
+						zoom: 2,
+						mapTypeId: 'terrain',
+						styles: data,
+						disableDefaultUI: true
+					})
+					{{with .Galleries}}
+					{{range .}}getGPXInfo('/d/{{.Path}}/gpx', '{{.Name}}', map, bounds)
+					{{end}}{{end}}
+
+					document.boundselement = bounds
+
+					map.fitBounds(bounds)
 				})
-				marker.addListener('click', function() {
-					location.href='/g/{{.Path}}'
-				})
-				bounds.extend(marker.getPosition());
-				{{end}}
-				{{end}}
-				map.setOptions({draggable: true, zoomControl: false, scrollwheel: true, disableDoubleClickZoom: true})
-				map.fitBounds(bounds)
+
+				//map.setOptions({draggable: true, zoomControl: true, scrollwheel: true, disableDoubleClickZoom: false})
 			}
 		</script>
 		<script src="https://maps.googleapis.com/maps/api/js?key={{.APIKey}}&callback=initMap" async defer></script>

@@ -7,16 +7,27 @@
 
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 	<script src="/static/manage.js"></script>
+
+	<style>
+#contentscroll {
+	grid-template-columns: repeat(1, 1fr) !important;
+}
+	</style>
 </head>
 <body>
 	<div id="contentscroll" class="vertical-menu">
+		<div class="albumcover"
+		     style="background: url(/static/tn_new.png);
+		            background-size:cover;">
+			<div class="covertitle albumletterpress" id="createButton">
+				Create New Gallery
+			</div>
+		</div>
 		{{with .Galleries}}
 		{{range .}}
-		<div class="albumcover">
-			<div class="coverimg">
-				<image src="/i/T/{{.Path}}/{{.Splash}}"></image>
-			</div>
-			<div class="shadow"></div>
+		<div class="albumcover"
+		     style="background: url(/i/T/{{.Path}}/{{.Splash}});
+		            background-size:cover;">
 			<div id="{{.Path}}" class="covertitle albumletterpress albummanager">
 				{{.Name}}
 				<input class="hidden __prop_path" value="{{.Path}}">
@@ -26,15 +37,6 @@
 		</div>
 		{{end}}
 		{{end}}
-		<div class="albumcover">
-			<div class="coverimg">
-				<image src="/static/tn_new.png"></image>
-			</div>
-			<div class="shadow"></div>
-			<div id="createButton", class="covertitle albumletterpress">
-				Create New Gallery
-			</div>
-		</div>
 	</div>
 	<div id="galleryeditor" class="hidden">
 		<form class="fieldset indent" onsubmit="return false;">
@@ -50,12 +52,6 @@
 				</form>
 				<progress></progress>
 			</div>
-<!--
-			<div class="tilesquare" imagename="feh_014426_000025_IMG_20161028_165109.jpg" gallerypath="goldmyer" imagedescription="feh_014426_000025_IMG_20161028_165109.jpg" style="background-image: url(&quot;/i/T/goldmyer/feh_014426_000025_IMG_20161028_165109.jpg&quot;);">
-				<button onclick="setThumbnail(this);">Set Thumbnail</button>
-				<button onclick="changeDescription(this)">Change Description</button>
-			</div>
-		-->
 		</div>
 	</div>
 </body>

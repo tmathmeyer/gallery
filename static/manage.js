@@ -10,6 +10,7 @@ function elem_prop(elem, prop) {
 
 function makePhotoSquares(photos) {
 	elem = document.getElementById("micropics")
+	elem.innerHTML = '';
 	for (var p in photos) {
 		elem.appendChild(getPhotoDiv(photos[p]))
 	}

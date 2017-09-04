@@ -33,16 +33,55 @@ body {
 	right: 0;
 	top: 60px;
 	bottom: 0;
-	margin-left: 30px;
-	margin-right: 30px;
+	margin-left: 5px;
+	margin-right: 5px;
 }
 
 #contentscroll {
 	position: absolute;
 	overflow-y: scroll;
 	left: 0;
+	padding-top: 5px;
 	height: 100%;
 	right: -17px;
+	display: grid;
+	grid-auto-rows: minmax(400px, 400px);
+}
+
+@media (min-width: 560px) {
+	#contentscroll {
+		grid-template-columns: repeat(1, 1fr);
+	}
+}
+
+@media (min-width: 1060px) {
+	#contentscroll {
+		grid-template-columns: repeat(2, 1fr);
+	}
+}
+
+@media (min-width: 1560px) {
+	#contentscroll {
+		grid-template-columns: repeat(3, 1fr);
+	}
+}
+
+@media (min-width: 2060px) {
+	#contentscroll {
+		grid-template-columns: repeat(4, 1fr);
+	}
+}
+
+@media (min-width: 2560px) {
+	#contentscroll {
+		grid-template-columns: repeat(5, 1fr);
+	}
+}
+
+@media (min-width: 3060px) {
+	#contentscroll {
+		grid-template-columns: repeat(6, 1fr);
+	}
 }
 
 .hidden {

@@ -84,18 +84,21 @@ func imageHandler(db *sql.DB) http.Handler {
 		switch url_data[0] {
 		case "F":
 			prefix = ""
+		case "H":
+			prefix = "hu_"
+			size = "2560"
 		case "L":
 			prefix = "lg_"
-			size = "2560"
+			size = "1920"
 		case "M":
 			prefix = "md_"
-			size = "1920"
+			size = "1280"
 		case "S":
 			prefix = "sm_"
-			size = "1280"
+			size = "640"
 		case "T":
 			prefix = "tn_"
-			size = "640"
+			size = "480"
 		default:
 			prefix = "tn_"
 		}
@@ -128,6 +131,32 @@ func resize_and_serve(w http.ResponseWriter, r *http.Request, original string, t
 	}
 	http.ServeFile(w, r, to_create)
 }
+
+// GET /d/:gallery/:resource
+func galleryDataHandler(db *sql.DB) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		parts := getPathParts(r, "/d/", 2)
+		galleryID := parts[0]
+		resourceType := parts[1]
+
+		var gallery Gallery
+		if err := getGallery(db, galleryID, &gallery); err != nil {
+			fmt.Printf("%s\n", err)
+			http.NotFound(w, r)
+			return
+		}
+
+		galleryData := getMetadataValue(db, "galleryData")
+
+		switch resourceType {
+		case "gpx":
+			http.ServeFile(w, r, galleryData + "/" + galleryID + "/route.gpx")
+		default:
+			http.NotFound(w, r)
+		}
+	})
+}
+
 
 // GET /g/:gallery
 func galleryDetailhandler(db *sql.DB) http.Handler {
@@ -238,6 +267,7 @@ func setupPublicHandlers(db *sql.DB) {
 	http.Handle("/g/", galleryDetailhandler(db))
 	http.Handle("/v/", customViewHandler(db))
 	http.Handle("/i/", imageHandler(db))
+	http.Handle("/d/", galleryDataHandler(db))
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
 }
 
