@@ -281,7 +281,27 @@ func set_gallery_prop(db *sql.DB, path string, prop string, value string) error 
 	return nil
 }
 
-// TODO add password
+func change_password(db *sql.DB, name string, pass string) {
+	query := "UPDATE admins SET passhash=? WHERE name=?"
+	stmt, tx, err := get_prepared_transaction(db, query)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer stmt.Close()
+
+	hash, err := HashPassword(pass)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	_, err = stmt.Exec(name, hash)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	tx.Commit()
+}
+
 func add_admin(db *sql.DB, name string, pass string) {
 	stmt, tx, err := get_prepared_transaction(db, "insert into admins(name, passhash) values(?, ?)")
 	if err != nil {
