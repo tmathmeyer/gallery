@@ -69,7 +69,7 @@ func galleryManagementHandler(db *sql.DB) http.Handler {
 		}
 
 		title := getMetadataValue(db, "title")
-		apiKey := getMetadataValue(db, "mapapikey")
+		apiKey := getMetadataValue(db, "apikey")
 
 		var index = IndexModel{
 			Title:     title,
@@ -244,7 +244,7 @@ func apiGalleryHandler(db *sql.DB) http.Handler {
 				return
 			}
 
-			add_gallery(db, gn[0], localpath, 90, 0, "placeholder.png")
+			add_gallery(db, gn[0], localpath, 0, 0, "placeholder.png")
 
 			fmt.Printf("Creating gallery: %s\n", gn[0])
 			http.Error(w, "OK", 200)
@@ -253,13 +253,14 @@ func apiGalleryHandler(db *sql.DB) http.Handler {
 		case "PUT":
 			path := getPathParts(r, "/a/g/", 1)
 			if len(path) == 0 {
+				fmt.Printf("path = %s\n", path)
 				http.NotFound(w, r)
 				return
 			}
 			gallPath := path[0]
 			r.ParseForm()
 
-			props := []string{"name", "splash"}
+			props := []string{"name", "splash", "lat", "lon"}
 			for _, prop := range props {
 				gn := r.Form[prop]
 				if len(gn) == 1 {
@@ -269,10 +270,11 @@ func apiGalleryHandler(db *sql.DB) http.Handler {
 						http.Error(w, "DB", 500)
 						return
 					}
-					http.Error(w, "OK", 200)
-					return
 				}
 			}
+
+			http.Error(w, "OK", 200)
+			return
 		}
 		http.NotFound(w, r)
 	})

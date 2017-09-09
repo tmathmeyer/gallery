@@ -8,20 +8,17 @@
     background: #394e61;
 }
 
-.vertical-menu::-webkit-scrollbar-track
-{
+.vertical-menu::-webkit-scrollbar-track {
 	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
 	background-color: #F5F5F5;
 }
 
-.vertical-menu::-webkit-scrollbar
-{
+.vertical-menu::-webkit-scrollbar {
 	width: 6px;
 	background-color: #F5F5F5;
 }
 
-.vertical-menu::-webkit-scrollbar-thumb
-{
+.vertical-menu::-webkit-scrollbar-thumb {
 	background-color: #000000;
 }
 
@@ -78,4 +75,32 @@
     float: left;
     background-size: 200px 200px;
     background-position: center center;
+}
+
+#mapLocationSelection {
+    height: 210px;
+    background: #cfc;
+}
+
+#mapControls {
+    height: 100%;
+    width: 210px;
+    float: right;
+
+    display:flex;
+    flex-direction:column;
+}
+
+#mapControls button {
+    margin-bottom: 10px;
+}
+
+#contentscroll {
+    grid-template-columns: repeat(1, 1fr) !important;
+}
+
+#mapElement {
+    position: absolute;
+    width: 100%;
+    height: 100%;
 }

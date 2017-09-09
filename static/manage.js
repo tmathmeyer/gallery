@@ -81,10 +81,31 @@ function changeDescription(elem) {
 	}
 }
 
+function setMapPoint(lat, lon) {
+	if (document.selection_marker) {
+		document.selection_marker.setMap(null);	
+	}
+	document.selection_marker = new google.maps.Marker({
+		position: {lat: parseInt(lat), lng: parseInt(lon)}
+	});
+	document.selection_marker.setMap(document.selection_map);
+}
+
+function load_centerpoint_location(elem) {
+	var lat = elem_prop(elem, "lat");
+	var lon = elem_prop(elem, "lon");
+	setMapPoint(lat, lon)
+}
+
 function load_gallery_for_changes(elem) {
+	if (!elem) {
+		return;
+	}
 	var name = elem_prop(elem, "name");
 	var path = elem_prop(elem, "path");
 	var splash = elem_prop(elem, "splash");
+
+	load_centerpoint_location(elem)
 
 	document.location.hash = elem.id
 
@@ -104,10 +125,6 @@ function load_gallery_for_changes(elem) {
 }
 
 $(document).ready(function() {
-	if (document.location.hash) {
-		elem = document.getElementById(document.location.hash.slice(1))
-		load_gallery_for_changes(elem)
-	}
 
 	$("#createButton").click(function(e) {
 		newname = prompt("Gallery name:", "")
@@ -146,7 +163,24 @@ $(document).ready(function() {
 				}
 			})
 		}
+	});
+
+	$("#map_update").click(function() {
+		path = $("#gallerynamesubmit").attr("path")
+		$.ajax({
+			url: '/a/g/'+path,
+			type: 'PUT',
+			data: {
+				lat: document.selection_marker.position.lat(),
+				lon: document.selection_marker.position.lng()
+			},
+			headers: {"Authorization": "Bearer " +getCookie("jwt")}
+		})
 	})
+
+	$("#map_reset").click(function() {
+		load_centerpoint_location(document.getElementById(document.location.hash.slice(1)))
+	});
 
 	$('#imgupload').on('click', function() {
 		console.log(new FormData($('#imguploadform')[0]))

@@ -31,7 +31,6 @@ function getTrackAndMidpoint(track, cb_line_center) {
 			max = speed;
 		}
 	}
-	console.log('finished loop 1')
 	for (var i = 0; i < track.children.length; i+=step) { 
 		var path = [];
 		var speed = 0;
@@ -69,8 +68,6 @@ function getSpeedColor(speed, min, max) {
 
 function getGPXInfo(url, name, map, bounds) {
 	getTrackFromUrl(url, function(lines, point) {
-		console.log(lines)
-		console.log(point)
 		for (var i=0; i<lines.length; i++) {
 			lines[i].setMap(map);
 		}
@@ -90,18 +87,15 @@ function getGPXInfo(url, name, map, bounds) {
 
 
 
-/*
-function parseGPX(data, map) {
-	console.log(data)
-	var trksegs = data.getElementsByTagName("trkseg");
-	for (var i = 0; i < trksegs.length; i++) {   
-		drawtrack(trksegs[i], map);
-	}
-}
 
 
-function drawtrack(track, map) {
-	var bounds = new google.maps.LatLngBounds();
+
+
+
+
+function getColoredTrack(track) {
+	var lines = [];
+
 	var step = 50;
 	var min = 9999999;
 	var max = 0;
@@ -132,62 +126,89 @@ function drawtrack(track, map) {
 				}
 			}
 		}
-		bounds.extend(new google.maps.LatLng(path[0]))
-		line = new google.maps.Polyline({
+		lines.push(new google.maps.Polyline({
 			path: path,
 			geodesic: false,
 			strokeColor: getSpeedColor(speed, min, max),
 			strokeOpacity: 1.0,
 			strokeWeight: 2
-		})
-		line.setMap(map)
+		}))
 	}
-	map.fitBounds(bounds)
+	return lines;
+}
 
-	google.charts.load('current', {'packages':['corechart']});
-	google.charts.setOnLoadCallback(drawChart);
+function gpxRaw2Path(gpxdata) {
+	var trksegs = gpxdata.getElementsByTagName("trkseg");
+	track = []
+	for (var i = 0; i < trksegs.length; i++) {
+		track = track.concat(getColoredTrack(trksegs[i]));
+	}
+	return track
+}
 
-	function drawChart() {
-		var table = [
-			['Time', 'Elevation',]
-		]
-		for (var i=0; i<track.children.length; i++) {
-			elev = Number(track.children[i].getElementsByTagName('ele')[0].childNodes[0].nodeValue);
-			date = new Date(track.children[i].getElementsByTagName('time')[0].childNodes[0].nodeValue);
-			time = twelveHour(date.getHours())+":"+addZero(date.getMinutes())+AmPm(date.getHours())
-			table.push([time, elev])
+function readGpxPath(path, cb) {
+	$.ajax({url: '/d/'+path+'/gpx', dataType: "xml",
+		success: function(data) {
+			cb(gpxRaw2Path(data))
 		}
-		var data = google.visualization.arrayToDataTable(table);
+	}).fail(function(err) {
+		cb(null);
+		return false;
+	})
+}
 
-		var options = {
-			title: 'Elevation over time',
-			curveType: 'function',
-			legend: { position: 'bottom' }
-		};
+function path2LatLon(path, result) {
+	var bounds = new google.maps.LatLngBounds();
 
-		var chart = new google.visualization.LineChart(document.getElementById('elevgraph'));
-		chart.draw(data, options);
+	for (var i = 0; i < path.length; i++) {
+		bounds.extend(path[i].getPath().getAt(0))
+	}
+
+	center = bounds.getCenter()
+	result.lat = center.lat()
+	result.lon = center.lng()
+}
+
+function getLocation(path, lat, lon, cb) {
+	lat = parseInt(lat)
+	lon = parseInt(lon)
+	res = {'gpx': null, 'lat': null, 'lon': null}
+	readGpxPath(path, function(path) {
+		if (path) {
+			res['gpx'] = path
+		}
+		if (path && lat==0 && lon==0) {
+			path2LatLon(path, res)
+		}
+		if (lat != 0 || lon != 0) {
+			res['lat'] = lat
+			res['lon'] = lon
+		}
+		cb(res)
+	})
+}
+
+function displayData(info, map) {
+	console.log(info)
+	for (var p in info) {
+		e = info[p]
+		if (e.gpx != null) {
+			renderGpx(e.gpx, map)
+		}
+		if (e.lat != null) {
+			drawPoint(e.lat, e.lon, map);
+		}
 	}
 }
 
-function twelveHour(time) {
-	if (time > 12) {
-		return time-12;
+function renderGpx(gpx, map) {
+	for(var i=0; i<gpx.length; i++) {
+		gpx[i].setMap(map);
 	}
-	return time;
 }
 
-function AmPm(time) {
-	if (time > 11) {
-		return 'PM'
-	}
-	return 'AM'
+function drawPoint(lat, lon, map) {
+	new google.maps.Marker({
+		position: {lat: lat, lng: lon}
+	}).setMap(map);
 }
-
-function addZero(mins) {
-	if (mins < 10) {
-		return '0'+mins
-	}
-	return mins
-}
-*/

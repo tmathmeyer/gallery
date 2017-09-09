@@ -41,26 +41,23 @@
 		<script>
 			function initMap() {
 				mapelem = document.getElementById("overviewmap");
-				bounds = new google.maps.LatLngBounds()
 
 				$.get('/static/topo.json', function(data) {
-					var map = new google.maps.Map(mapelem, {
+					gpxInfo = {}
+					//name path lat lon splash
+					{{with .Galleries}}
+					{{range .}}getLocation('{{.Path}}', '{{.Lat}}', '{{.Lon}}', function(dat){
+					gpxInfo['{{.Path}}'] = dat;
+					{{end}}{{end}}
+					displayData(gpxInfo, new google.maps.Map(mapelem, {
 						center: {lat: 0, lng: 0},
 						zoom: 2,
 						mapTypeId: 'terrain',
 						styles: data,
 						disableDefaultUI: true
-					})
-					{{with .Galleries}}
-					{{range .}}getGPXInfo('/d/{{.Path}}/gpx', '{{.Name}}', map, bounds)
-					{{end}}{{end}}
-
-					document.boundselement = bounds
-
-					map.fitBounds(bounds)
+					}));
+					{{with .Galleries}}{{range .}}});{{end}}{{end}}
 				})
-
-				//map.setOptions({draggable: true, zoomControl: true, scrollwheel: true, disableDoubleClickZoom: false})
 			}
 		</script>
 		<script src="https://maps.googleapis.com/maps/api/js?key={{.APIKey}}&callback=initMap" async defer></script>

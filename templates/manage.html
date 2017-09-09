@@ -7,12 +7,6 @@
 
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 	<script src="/static/manage.js"></script>
-
-	<style>
-#contentscroll {
-	grid-template-columns: repeat(1, 1fr) !important;
-}
-	</style>
 </head>
 <body>
 	<div id="contentscroll" class="vertical-menu">
@@ -33,6 +27,8 @@
 				<input class="hidden __prop_path" value="{{.Path}}">
 				<input class="hidden __prop_name" value="{{.Name}}">
 				<input class="hidden __prop_splash" value="{{.Splash}}">
+				<input class="hidden __prop_lat" value="{{.Lat}}">
+				<input class="hidden __prop_lon" value="{{.Lon}}">
 			</div>
 		</div>
 		{{end}}
@@ -44,6 +40,17 @@
 			<button id="gallerynamesubmit">Change Name</button>
 		</form>
 		<hr />
+		<div id="mapLocationSelection" class="fieldset">
+			<div id="mapElement">
+			</div>
+			<div id="mapControls">
+				<button id="map_reset">Load Location</button>
+				<button id="map_update">Save Location</button>
+				<button id="map_gpx">Load GPX</button>
+				<button id="map_gpx">Save GPX</button>
+			</div>
+		</div>
+		<hr />
 		<div id="micropics">
 			<div class="tilesquare" id="picuploader">
 				<form id="imguploadform" enctype="multipart/form-data">
@@ -54,5 +61,28 @@
 			</div>
 		</div>
 	</div>
+	<script>
+		function initMap() {
+			mapelem = document.getElementById("mapElement");
+
+			map = new google.maps.Map(mapelem, {
+				mapTypeId: 'terrain',
+				disableDefaultUI: true,
+				zoom: 4,
+				center: {lat: -25.363, lng: 131.044}
+			});
+			document.selection_map = map;
+
+			if (document.location.hash) {
+				elem = document.getElementById(document.location.hash.slice(1))
+				load_gallery_for_changes(elem)
+			}
+
+			google.maps.event.addListener(map, 'click', function(event) {
+				setMapPoint(event.latLng.lat(), event.latLng.lng())
+			});
+		}
+	</script>
+	<script src="https://maps.googleapis.com/maps/api/js?key={{.APIKey}}&callback=initMap" async defer></script>
 </body>
 </html>
