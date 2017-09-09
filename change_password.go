@@ -1,7 +1,8 @@
 package main
 
 import (
-    _ "github.com/mattn/go-sqlite3"
+	"fmt"
+	_ "github.com/mattn/go-sqlite3"
 	"log"
 )
 
@@ -13,6 +14,9 @@ func main() {
 	}
 	defer db.Close()
 
-	change_password(db, "{NAME}", "{PASSWORD}")
-}
+	name := ""
+	pass := ""
+	change_password(db, name, pass)
+	fmt.Printf("%s\n", is_admin(db, name, pass))
 
+}

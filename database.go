@@ -294,7 +294,7 @@ func change_password(db *sql.DB, name string, pass string) {
 		log.Fatal(err)
 	}
 
-	_, err = stmt.Exec(name, hash)
+	_, err = stmt.Exec(hash, name)
 	if err != nil {
 		log.Fatal(err)
 	}
