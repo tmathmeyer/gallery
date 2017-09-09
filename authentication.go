@@ -23,7 +23,7 @@ func verify_authentication_middleware(authorized http.Handler, unauthorized http
 		if authentication == "" {
 			authcookie, err := r.Cookie("jwt")
 			if err != nil {
-				fmt.Printf('JWT: %s\n', err)
+				fmt.Printf("JWT: %s\n", err)
 				unauthorized.ServeHTTP(w, r)
 				return
 			}
@@ -31,7 +31,7 @@ func verify_authentication_middleware(authorized http.Handler, unauthorized http
 		}
 
 		if authentication == "" {
-			fmt.Printf('AUTH: %s\n', err)
+			fmt.Printf("AUTH: missing\n")
 			unauthorized.ServeHTTP(w, r)
 			return
 		} else if authentication[:6] == "Bearer" {
@@ -42,7 +42,7 @@ func verify_authentication_middleware(authorized http.Handler, unauthorized http
 		_, err := get_user_authentication(authentication, []byte(secret))
 
 		if err != nil {
-			fmt.Printf('PCMP: %s\n', err)
+			fmt.Printf("PCMP: %s\n", err)
 			unauthorized.ServeHTTP(w, r)
 		} else {
 			authorized.ServeHTTP(w, r)
