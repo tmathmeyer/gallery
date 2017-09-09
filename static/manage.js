@@ -86,7 +86,7 @@ function setMapPoint(lat, lon) {
 		document.selection_marker.setMap(null);	
 	}
 	document.selection_marker = new google.maps.Marker({
-		position: {lat: parseInt(lat), lng: parseInt(lon)}
+		position: {lat: parseFloat(lat), lng: parseFloat(lon)}
 	});
 	document.selection_marker.setMap(document.selection_map);
 }
