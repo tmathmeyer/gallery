@@ -170,8 +170,8 @@ function path2LatLon(path, result) {
 }
 
 function getLocation(path, lat, lon, cb) {
-	lat = parseInt(lat)
-	lon = parseInt(lon)
+	lat = parseFloat(lat)
+	lon = parseFloat(lon)
 	res = {'gpx': null, 'lat': null, 'lon': null}
 	readGpxPath(path, function(path) {
 		if (path) {
