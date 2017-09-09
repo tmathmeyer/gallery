@@ -12,7 +12,7 @@ import (
 	"strings"
 )
 
-const serverPort string = ":8081"
+const serverPort string = ":7923"
 
 type Image struct {
 	name string
