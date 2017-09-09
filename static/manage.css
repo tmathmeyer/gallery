@@ -30,6 +30,7 @@
     top: 0;
     bottom: 0;
     padding: 10px;
+    overflow: scroll;
 
     font: 13px 'Lucida sans', Arial, Helvetica;
     text-align: center;
@@ -78,7 +79,7 @@
 }
 
 #mapLocationSelection {
-    height: 210px;
+    height: 420px;
     background: #cfc;
 }
 
@@ -103,4 +104,8 @@
     position: absolute;
     width: 100%;
     height: 100%;
+}
+
+#micropics {
+    overflow: auto;
 }
