@@ -1,8 +1,4 @@
-test/
-photos/
 setup.go
-
-# Binaries
-server
-vipsthumbnail
-live.sqlite
+.images
+.data
+*.sqlite

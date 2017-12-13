@@ -1,0 +1,31 @@
+tables:
+  photo:
+    id: [INTEGER, PRIMARY KEY, AUTOINCREMENT]
+    type: [INTEGER]
+    name: [TEXT]
+    description: [TEXT]
+    gallery: [TEXT]
+
+  geodata:
+    id: [INTEGER, PRIMARY KEY, AUTOINCREMENT]
+    lat: [REAL]
+    lng: [REAL]
+    gpx: [TEXT]
+  
+  gallery:
+    id: [INTEGER, PRIMARY KEY, AUTOINCREMENT]
+    name: [TEXT]
+    path: [TEXT]
+    lat: [REAL]
+    lon: [REAL]
+    splash: [TEXT]
+
+  user:
+    id: [INTEGER, PRIMARY KEY, AUTOINCREMENT]
+    name: [TEXT]
+    passhash: [TEXT]
+    admin: [INTEGER]
+  
+  metadata:
+    key: [TEXT, PRIMARY KEY]
+    value: [TEXT]

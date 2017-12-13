@@ -8,7 +8,7 @@
         if(/android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(navigator.userAgent.toLowerCase())) {
           window.open("/img/full/"+gal+"/"+img,'_blank');
         } else {
-          window.open("/v/image/"+gal+"/"+img, '_self');
+          window.open("/view/"+gal+"/"+img, '_self');
         }
       }
     </script>
@@ -25,7 +25,7 @@
         {{with .Images}}
         {{range .}}
         <div class="photo"
-             style="background: url(/i/T/{{$.GalleryID}}/{{.Name}}); background-size:cover;"
+             style="background: url(/img/{{$.GalleryID}}/{{.Name}}/TN); background-size:cover;"
              onclick="load_image('{{$.GalleryID}}','{{.Name}}')">
         </div>
         {{end}}

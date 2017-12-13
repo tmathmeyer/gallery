@@ -20,7 +20,7 @@
 		{{with .Galleries}}
 		{{range .}}
 		<div class="albumcover"
-		     style="background: url(/i/T/{{.Path}}/{{.Splash}});
+		     style="background: url(/img/{{.Path}}/{{.Splash}}/TN);
 		            background-size:cover;">
 			<div id="{{.Path}}" class="covertitle albumletterpress albummanager">
 				{{.Name}}
@@ -63,6 +63,7 @@
 	</div>
 	<script>
 		function initMap() {
+			return;
 			mapelem = document.getElementById("mapElement");
 
 			map = new google.maps.Map(mapelem, {

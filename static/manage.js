@@ -20,7 +20,7 @@ function makePhotoSquares(photos) {
 
 function getPhotoDiv(photo) {
 	var div = document.createElement("div");
-	urlImage = "url('/i/T/"+photo.Gallery+"/"+photo.Name+"')"
+	urlImage = "url('/img/"+photo.Gallery+"/"+photo.Name+"/TN')"
 	console.log(urlImage)
 	div.style.backgroundImage = urlImage;
 	div.className="tilesquare"
@@ -46,7 +46,7 @@ function setThumbnail(elem) {
 	gallery = elem.getAttribute('gallerypath')
 	image = elem.getAttribute('imagename')
 	$.ajax({
-		url: '/a/g/'+gallery,
+		url: '/api/gallery/'+gallery,
 		type: 'PUT',
 		data: {
 			splash: image
@@ -67,7 +67,7 @@ function changeDescription(elem) {
 
 	if (newDesc && newDesc != oldDescription) {
 		$.ajax({
-			url: '/a/i/'+gallery,
+			url: '/api/image/'+gallery,
 			type: 'PUT',
 			data: {
 				image: image,
@@ -115,7 +115,7 @@ function load_gallery_for_changes(elem) {
 
 
 	$.ajax({
-		url: '/a/i/'+path,
+		url: '/api/image/'+path,
 		type: 'GET',
 		headers: {"Authorization": "Bearer " +getCookie("jwt")},
 		success: function(data) {
@@ -130,7 +130,7 @@ $(document).ready(function() {
 		newname = prompt("Gallery name:", "")
 		if (newname) {
 			$.ajax({
-				url: '/a/g',
+				url: '/api/gallery',
 				type: 'POST',
 				data: {
 					galleryname: newname
@@ -152,7 +152,7 @@ $(document).ready(function() {
 		path = $("#gallerynamesubmit").attr("path")
 		if (name) {
 			$.ajax({
-				url: '/a/g/'+path,
+				url: '/api/gallery/'+path,
 				type: 'PUT',
 				data: {
 					name: name
@@ -168,7 +168,7 @@ $(document).ready(function() {
 	$("#map_update").click(function() {
 		path = $("#gallerynamesubmit").attr("path")
 		$.ajax({
-			url: '/a/g/'+path,
+			url: '/api/gallery/'+path,
 			type: 'PUT',
 			data: {
 				lat: document.selection_marker.position.lat(),
@@ -186,7 +186,7 @@ $(document).ready(function() {
 		console.log(new FormData($('#imguploadform')[0]))
 		$.ajax({
 			// Your server script to process the upload
-			url: '/a/u/'+$("#gallerynamesubmit").attr("path"),
+			url: '/api/upload/'+$("#gallerynamesubmit").attr("path"),
 			type: 'POST',
 
 			// Form data
