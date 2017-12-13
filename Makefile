@@ -1,3 +1,7 @@
+bin:
+	cd database && python generate.py
+	go build main.go -o server
+
 run:
 	cd database && python generate.py
 	go run main.go
