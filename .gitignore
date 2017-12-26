@@ -2,3 +2,5 @@ setup.go
 .images
 .data
 *.sqlite
+server
+images/

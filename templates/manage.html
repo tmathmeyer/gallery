@@ -2,55 +2,68 @@
 <head>
 	<link rel="stylesheet" type="text/css" href="/static/manage.css">
 	<link rel="stylesheet" type="text/css" href="/static/gallerytile.css">
-	<link rel="stylesheet" type="text/css" href="/static/breadcrumb.css">
-	<link rel="stylesheet" type="text/css" href="/static/common.css">
+	<link rel="stylesheet" type="text/css" href="/conf/common.css">
 
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 	<script src="/static/manage.js"></script>
 </head>
 <body>
-	<div id="contentscroll" class="vertical-menu">
-		<div class="albumcover"
-		     style="background: url(/static/tn_new.png);
-		            background-size:cover;">
-			<div class="covertitle albumletterpress" id="createButton">
-				Create New Gallery
+	<div id="sidebar" class="vertical-menu">
+		<div id="sidetopsection">
+			<div class="menuitem">
+				<div class="menuitem-icon" style="background-image:url(/static/if_key.svg);">
+				</div>
+				<div class="menuitem-text">
+					Manage Users
+				</div>
+			</div>
+			<div id="createButton" class="menuitem">
+				<div class="menuitem-icon" style="background-image:url(/static/if_book.svg);">
+				</div>
+				<div class="menuitem-text">
+					Create Album
+				</div>
 			</div>
 		</div>
 		{{with .Galleries}}
 		{{range .}}
-		<div class="albumcover"
-		     style="background: url(/img/{{.Path}}/{{.Splash}}/TN);
-		            background-size:cover;">
-			<div id="{{.Path}}" class="covertitle albumletterpress albummanager">
-				{{.Name}}
-				<input class="hidden __prop_path" value="{{.Path}}">
-				<input class="hidden __prop_name" value="{{.Name}}">
-				<input class="hidden __prop_splash" value="{{.Splash}}">
-				<input class="hidden __prop_lat" value="{{.Lat}}">
-				<input class="hidden __prop_lon" value="{{.Lon}}">
+		<div id="{{.Path}}" class="menuitem albummanager">
+			<div class="menuitem-icon" style="background-image:url(/img/{{.Path}}/{{.Splash}}/TN);">
 			</div>
+			<div class="menuitem-text">
+				{{.Name}}
+			</div>
+			<input class="hidden __prop_path" value="{{.Path}}">
+			<input class="hidden __prop_name" value="{{.Name}}">
+			<input class="hidden __prop_splash" value="{{.Splash}}">
+			<input class="hidden __prop_lat" value="{{.Lat}}">
+			<input class="hidden __prop_lon" value="{{.Lon}}">
 		</div>
 		{{end}}
 		{{end}}
 	</div>
+
+
+
 	<div id="galleryeditor" class="hidden">
-		<form class="fieldset indent" onsubmit="return false;">
-		  	<input id="gallerynamefield" class="albumletterpress" type="text" value="<<galleryname>>">
+		<form class="fieldset" onsubmit="return false;">
+		  	<input id="gallerynamefield" type="text" value="<<galleryname>>">
 			<button id="gallerynamesubmit">Change Name</button>
 		</form>
-		<hr />
-		<div id="mapLocationSelection" class="fieldset">
-			<div id="mapElement">
+		<div id="controls">
+			<div class="menuitem">
+				<div class="menuitem-icon" style="background-image:url(/static/if_map.svg);">
+				</div>
 			</div>
-			<div id="mapControls">
-				<button id="map_reset">Load Location</button>
-				<button id="map_update">Save Location</button>
-				<button id="map_gpx">Load GPX</button>
-				<button id="map_gpx">Save GPX</button>
+			<div class="menuitem">
+				<div class="menuitem-icon" style="background-image:url(/static/if_upload.svg);">
+				</div>
+			</div>
+			<div class="menuitem">
+				<div class="menuitem-icon" style="background-image:url(/static/if_lock.svg);">
+				</div>
 			</div>
 		</div>
-		<hr />
 		<div id="micropics">
 			<div class="tilesquare" id="picuploader">
 				<form id="imguploadform" enctype="multipart/form-data">
@@ -61,29 +74,5 @@
 			</div>
 		</div>
 	</div>
-	<script>
-		function initMap() {
-			return;
-			mapelem = document.getElementById("mapElement");
-
-			map = new google.maps.Map(mapelem, {
-				mapTypeId: 'terrain',
-				disableDefaultUI: true,
-				zoom: 4,
-				center: {lat: -25.363, lng: 131.044}
-			});
-			document.selection_map = map;
-
-			if (document.location.hash) {
-				elem = document.getElementById(document.location.hash.slice(1))
-				load_gallery_for_changes(elem)
-			}
-
-			google.maps.event.addListener(map, 'click', function(event) {
-				setMapPoint(event.latLng.lat(), event.latLng.lng())
-			});
-		}
-	</script>
-	<script src="https://maps.googleapis.com/maps/api/js?key={{.APIKey}}&callback=initMap" async defer></script>
 </body>
 </html>

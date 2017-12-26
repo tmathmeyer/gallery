@@ -1,11 +1,11 @@
 .vertical-menu {
-    width: 410px;
+    width: 125px;
     position: fixed;
     top: -2px;
     left: 0;
     height: 100%;
     padding-top: 2px;
-    background: #394e61;
+    background: #fff;
 }
 
 .vertical-menu::-webkit-scrollbar-track {
@@ -22,31 +22,72 @@
 	background-color: #000000;
 }
 
+
+#sidetopsection {
+    height: 250px;
+    width: 125px;
+    top: 0;
+}
+
+.menuitem {
+    height: 125px;
+    width: 125px;
+    padding: 0;
+    vertical-align: top;
+    position: relative;
+    float: left;
+}
+
+.menuitem-icon {
+    position: absolute;
+    margin-left: 40px;
+    margin-right: 40px;
+    width: 40px;
+    height: 45px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    top: 40px;
+}
+
+.menuitem-text {
+    height: 25px;
+    top: 90px;
+    line-height: 25px;
+    font-size: 10px;
+    text-align: center;
+    position: relative;
+    background-color: #fff;
+}
+
+.menuitem:hover {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
 #galleryeditor {
     position: fixed;
-    left: 410px;
+    left: 125px;
     right: 0;
     height: 100%;
     top: 0;
     bottom: 0;
     padding: 10px;
-    overflow: scroll;
 
     font: 13px 'Lucida sans', Arial, Helvetica;
     text-align: center;
+    background: #fafafa;
 }
 
-
-.fieldset {
+#galleryeditor .fieldset {
     height: 60px;
     color: #394e61;
-    background: #485E74;
+    background: #f2f2f2;
     padding: 0;
-    margin: 10px;
     position: relative;
+    border-radius: 5px;
 }
 
-.fieldset input {
+#galleryeditor .fieldset input {
     outline: none;
     border: none;
 
@@ -56,10 +97,11 @@
     height: 40px;
     line-height: 40px;
 
-    background: #485E74;
+    background: #f5f5f5;
+    text-align:center;
 }
 
-.fieldset button {
+#galleryeditor .fieldset button {
     font-size: 20px;
     position: relative;
     top: 10px;
@@ -68,6 +110,19 @@
     float: right;
     margin-right: 10px;
 }
+
+#galleryeditor #controls {
+    height: 125px;
+    width: 100%;
+    display: block;
+}
+
+
+
+
+
+
+
 
 .tilesquare {
     width: 200px;

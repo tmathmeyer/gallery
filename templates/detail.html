@@ -1,8 +1,7 @@
 <html>
   <head>
     <link rel="stylesheet" type="text/css" href="/static/gallery.css">
-    <link rel="stylesheet" type="text/css" href="/static/breadcrumb.css">
-    <link rel="stylesheet" type="text/css" href="/static/common.css">
+    <link rel="stylesheet" type="text/css" href="/conf/common.css">
     <script>
       function load_image(gal, img) {
         if(/android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(navigator.userAgent.toLowerCase())) {
@@ -15,7 +14,7 @@
   </head>
   <body>
     <div id="header" class="letterpress">
-      <ul class="breadcrumb">
+      <ul class="breadcrumb menu">
         <li><a href="/">{{.Title}}</a></li>
         <li><a href="#">{{.GalleryName}}</a></li>
       </ul>

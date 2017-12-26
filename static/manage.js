@@ -105,8 +105,6 @@ function load_gallery_for_changes(elem) {
 	var path = elem_prop(elem, "path");
 	var splash = elem_prop(elem, "splash");
 
-	load_centerpoint_location(elem)
-
 	document.location.hash = elem.id
 
 	$("#gallerynamefield").val(name)
@@ -124,21 +122,42 @@ function load_gallery_for_changes(elem) {
 	})
 }
 
+function sendData(type, gallery, special) {
+	url = '/api/gallery'
+	if (type == 'PUT') {
+		url += '/'+gallery
+	}
+	if (typof special !== 'undefined') {
+		url = special
+	}
+	return function(data, success, xhr) {
+		req = {
+			url: url,
+			type: type,
+			data: data,
+			headers: {"Authorization": "Bearer "+getCookie("jwt")}
+		}
+		if (typeof success !== 'undefined') {
+			req['success'] = success
+		}
+		if (typeof xhr !== 'undefined') {
+			req['xhr'] = xhr
+		}
+		$.ajax(req)
+	}
+}
+
 $(document).ready(function() {
+
+	if (document.location.hash) {
+		load_gallery_for_changes(document.getElementById(document.location.hash.slice(1)))
+	}
 
 	$("#createButton").click(function(e) {
 		newname = prompt("Gallery name:", "")
 		if (newname) {
-			$.ajax({
-				url: '/api/gallery',
-				type: 'POST',
-				data: {
-					galleryname: newname
-				},
-				headers: {"Authorization": "Bearer " +getCookie("jwt")},
-				success: function () {
-					location.reload()
-				}
+			sendData('POST')({galleryname: newname}, function() {
+				location.reload()
 			})
 		}
 	});
@@ -151,35 +170,10 @@ $(document).ready(function() {
 		name = $("#gallerynamefield").val()
 		path = $("#gallerynamesubmit").attr("path")
 		if (name) {
-			$.ajax({
-				url: '/api/gallery/'+path,
-				type: 'PUT',
-				data: {
-					name: name
-				},
-				headers: {"Authorization": "Bearer " +getCookie("jwt")},
-				success: function () {
-					location.reload()
-				}
+			sendData('PUT', path)({name: name}, function() {
+				location.reload()
 			})
 		}
-	});
-
-	$("#map_update").click(function() {
-		path = $("#gallerynamesubmit").attr("path")
-		$.ajax({
-			url: '/api/gallery/'+path,
-			type: 'PUT',
-			data: {
-				lat: document.selection_marker.position.lat(),
-				lon: document.selection_marker.position.lng()
-			},
-			headers: {"Authorization": "Bearer " +getCookie("jwt")}
-		})
-	})
-
-	$("#map_reset").click(function() {
-		load_centerpoint_location(document.getElementById(document.location.hash.slice(1)))
 	});
 
 	$('#imgupload').on('click', function() {

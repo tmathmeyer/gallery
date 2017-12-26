@@ -20,6 +20,8 @@ func setupHandlers(db *sql.DB) {
 	http.Handle("/view/", web.DragAndDropImageHandler(db))
 	http.Handle("/img/", web.ImageRawHandler(db))
 
+	http.Handle("/conf/", web.CssConfigureHandler(db))
+
 	// Related to Authentication
 	http.Handle("/auth/handle", web.LoginRequestHandler(db))
 	http.Handle("/manage", web.VerifyAuthenticationMiddleware(
