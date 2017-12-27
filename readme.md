@@ -8,6 +8,7 @@ A really simple host-it-yourself photo gallery project
  - `go get github.com/dgrijalva/jwt-go`
  - `go get github.com/mattn/go-sqlite3`
  - `go get golang.org/x/crypto/bcrypt`
+ - `go get gopkg.in/yaml.v2`
 
 ## Installation
  - See dependancies section for what to install

@@ -172,8 +172,7 @@ function uploadFileForImage(img_el, ea) {
 		contentType: false,
 		processData: false,
 		success: function(data) {
-			console.log(data)
-			image.setAttribute('data-name', data)
+			image.setAttribute('data-name', data.trim())
 			image.querySelectorAll('progress')[0].classList.add('hidden')
 			ea(img_el)
 		},
