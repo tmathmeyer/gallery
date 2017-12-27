@@ -55,22 +55,22 @@
 				<div class="menuitem-icon" style="background-image:url(/static/if_map.svg);">
 				</div>
 			</div>
-			<div class="menuitem">
+			<div class="menuitem" id="imageupload">
 				<div class="menuitem-icon" style="background-image:url(/static/if_upload.svg);">
 				</div>
 			</div>
+			<input id="imageupload_hidden" type="file" style="display:none" multiple />
 			<div class="menuitem">
 				<div class="menuitem-icon" style="background-image:url(/static/if_lock.svg);">
 				</div>
 			</div>
+			<div class="menuitem" id="thumbnail_toggle">
+				<div class="menuitem-icon" style="background-image:url(/static/if_thumbnail.svg);">
+				</div>
+			</div>
 		</div>
-		<div id="micropics">
-			<div class="tilesquare" id="picuploader">
-				<form id="imguploadform" enctype="multipart/form-data">
-					<input id="imgfpkr" name="newimage" type="file" />
-					<input id="imgupload" type="button" value="Upload" />
-				</form>
-				<progress></progress>
+		<div id="photoholder">
+			<div id="photos">
 			</div>
 		</div>
 	</div>

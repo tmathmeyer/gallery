@@ -117,50 +117,47 @@
     display: block;
 }
 
-
-
-
-
-
-
-
-.tilesquare {
-    width: 200px;
-    height: 200px;
-    margin: 10px;
-    float: left;
-    background-size: 200px 200px;
-    background-position: center center;
-}
-
-#mapLocationSelection {
-    height: 420px;
-    background: #cfc;
-}
-
-#mapControls {
+#photoholder {
+    overflow: scroll;
     height: 100%;
-    width: 210px;
+}
+
+#photos {
+    height: 100%;
+    line-height: 0;
+    -webkit-column-count: 5;
+    -webkit-column-gap:   0px;
+    -moz-column-count:    5;
+    -moz-column-gap:      0px;
+    column-count:         5;
+    column-gap:           0px;
+}
+
+.uploading-photo {
+    margin:10px;
+    height: auto;
     float: right;
-
-    display:flex;
-    flex-direction:column;
+    position: relative;
 }
 
-#mapControls button {
-    margin-bottom: 10px;
-}
-
-#contentscroll {
-    grid-template-columns: repeat(1, 1fr) !important;
-}
-
-#mapElement {
-    position: absolute;
+.uploading-photo img {
     width: 100%;
-    height: 100%;
+    overflow: auto;
 }
 
-#micropics {
-    overflow: auto;
+.uploading-photo .thumbnailsetter {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.3);
+    left: 0px;
+    top: 0px;
+
+    font-size: 60px;
+    line-height: 100px;
+    cursor: pointer;
+}
+
+.uploading-photo .thumbnailsetter:hover {
+    color: #0f0;
 }

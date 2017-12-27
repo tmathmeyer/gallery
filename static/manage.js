@@ -8,126 +8,12 @@ function elem_prop(elem, prop) {
 	return elem.getElementsByClassName("__prop_"+prop)[0].value;
 }
 
-function makePhotoSquares(photos) {
-	elem = document.getElementById("micropics")
-	upload = document.getElementById("picuploader")
-	elem.innerHTML = '';
-	elem.appendChild(upload)
-	for (var p in photos) {
-		elem.appendChild(getPhotoDiv(photos[p]))
-	}
-}
-
-function getPhotoDiv(photo) {
-	var div = document.createElement("div");
-	urlImage = "url('/img/"+photo.Gallery+"/"+photo.Name+"/TN')"
-	console.log(urlImage)
-	div.style.backgroundImage = urlImage;
-	div.className="tilesquare"
-	div.setAttribute("imageName", photo.Name);
-	div.setAttribute("galleryPath", photo.Gallery);
-	div.setAttribute("imageDescription", photo.Descr);
-
-	var b1 = document.createElement("button")
-	b1.onclick = function() {setThumbnail(div)}
-	b1.innerHTML = "Set Thumbnail"
-	
-	var b2 = document.createElement("button")
-	b2.onclick = function() {changeDescription(div)}
-	b2.innerHTML = "Change Description"
-
-	div.appendChild(b1)
-	div.appendChild(b2)
-	
-	return div;
-}
-
-function setThumbnail(elem) {
-	gallery = elem.getAttribute('gallerypath')
-	image = elem.getAttribute('imagename')
-	$.ajax({
-		url: '/api/gallery/'+gallery,
-		type: 'PUT',
-		data: {
-			splash: image
-		},
-		headers: {"Authorization": "Bearer " +getCookie("jwt")},
-		success: function () {
-			location.reload()
-		}
-	})
-}
-
-function changeDescription(elem) {
-	gallery = elem.getAttribute('gallerypath')
-	image = elem.getAttribute('imagename')
-	oldDescription = elem.getAttribute('imagedescription')
-
-	newDesc = prompt("Description", oldDescription)
-
-	if (newDesc && newDesc != oldDescription) {
-		$.ajax({
-			url: '/api/image/'+gallery,
-			type: 'PUT',
-			data: {
-				image: image,
-				description: newDesc
-			},
-			headers: {"Authorization": "Bearer " +getCookie("jwt")},
-			success: function () {
-				elem.setAttribute('imageDescription', newDesc)
-			}
-		})
-	}
-}
-
-function setMapPoint(lat, lon) {
-	if (document.selection_marker) {
-		document.selection_marker.setMap(null);	
-	}
-	document.selection_marker = new google.maps.Marker({
-		position: {lat: parseFloat(lat), lng: parseFloat(lon)}
-	});
-	document.selection_marker.setMap(document.selection_map);
-}
-
-function load_centerpoint_location(elem) {
-	var lat = elem_prop(elem, "lat");
-	var lon = elem_prop(elem, "lon");
-	setMapPoint(lat, lon)
-}
-
-function load_gallery_for_changes(elem) {
-	if (!elem) {
-		return;
-	}
-	var name = elem_prop(elem, "name");
-	var path = elem_prop(elem, "path");
-	var splash = elem_prop(elem, "splash");
-
-	document.location.hash = elem.id
-
-	$("#gallerynamefield").val(name)
-	$("#gallerynamesubmit").attr("path", path)
-	$("#galleryeditor").removeClass("hidden")
-
-
-	$.ajax({
-		url: '/api/image/'+path,
-		type: 'GET',
-		headers: {"Authorization": "Bearer " +getCookie("jwt")},
-		success: function(data) {
-			makePhotoSquares(data)
-		}
-	})
-}
-
 function sendData(type, gallery, special) {
 	url = '/api/gallery'
 	if (type == 'PUT') {
 		url += '/'+gallery
 	}
-	if (typof special !== 'undefined') {
+	if (typeof special !== 'undefined') {
 		url = special
 	}
 	return function(data, success, xhr) {
@@ -147,6 +33,166 @@ function sendData(type, gallery, special) {
 	}
 }
 
+function createImageHolder(file, cb) {
+	photo = document.createElement('div')
+	img = document.createElement('img')
+	progress = document.createElement('progress')
+	thb = document.createElement('div')
+
+	progress.classList.add('hidden')
+	photo.classList.add('uploading-photo')
+	thb.classList.add('thumbnailsetter')
+	thb.classList.add('hidden')
+	thb.innerHTML = 'Set Thumbnail'
+	thb.onclick = setThumbnail
+
+	img.src = '/static/loading.gif'
+	photo.appendChild(img)
+	photo.appendChild(progress)
+	photo.appendChild(thb)
+
+	photo.setAttribute('data-gallery', $("#gallerynamesubmit").attr("path"))
+
+	cb({
+		image: file,
+		element: photo
+	})
+}
+
+function setThumbnail() {
+	thmb = document.getElementsByClassName('thumbnailsetter')
+	for (i=0; i<thmb.length; i++) {
+		thmb[i].classList.add('hidden')
+	}
+	parent = this.parentElement
+	gallery = parent.getAttribute('data-gallery')
+	name = parent.getAttribute('data-name')
+
+	sendData('PUT', gallery)({splash:name}, function() {
+		location.reload()
+	})
+}
+
+function populateImagesWithData(img_el, cb) {
+	img = img_el['image']
+	ele = img_el['element']
+	ele.querySelectorAll('img')[0].src = '/img/'+img.Gallery+'/'+img.Name+'/TN'
+	ele.setAttribute('data-name', img.Name)
+	cb(img_el)
+}
+
+function makePhotoSquares(photos) {
+	callSynchronously([
+		createImageHolder,
+		renderTemporaryImage,
+		populateImagesWithData
+	], photos, function(){})
+}
+
+function queueUpload(files) {
+	callSynchronously([
+		createImageHolder,
+		renderTemporaryImage,
+		populateImageHolder,
+		uploadFileForImage
+	], files, console.log)
+}
+
+function load_gallery_for_changes(elem) {
+	if (!elem) {
+		return;
+	}
+	var name = elem_prop(elem, "name");
+	var path = elem_prop(elem, "path");
+	var splash = elem_prop(elem, "splash");
+	document.location.hash = elem.id
+	$("#gallerynamefield").val(name)
+	$("#gallerynamesubmit").attr("path", path)
+	$("#galleryeditor").removeClass("hidden")
+
+	document.getElementById("photos").innerHTML = ''
+	sendData('GET', null, '/api/image/'+path)(null, makePhotoSquares)
+}
+
+function syncMap(iterable, asyncMapper, acceptor) {
+	(function(map) {
+		map(0, map, [])
+	})(function(index, doNext, result) {
+		if (iterable) {
+			asyncMapper(iterable[index], function(B) {
+				result.push(B)
+				if (index+1 >= iterable.length) {
+					acceptor(result)
+				} else {
+					doNext(index+1, doNext, result)
+				}
+			})
+		} else {
+			acceptor(result)
+		}
+	})
+}
+
+function callSynchronously(funcs, data, cb) {
+	f = funcs.shift()
+	if (f) {
+		syncMap(data, f, function(d) {
+			callSynchronously(funcs, d, cb)
+		})
+	} else {
+		cb(data)
+	}
+}
+
+function populateImageHolder(img_el, element_acceptor) {
+	var reader = new FileReader()
+	reader.onload = function (e) {
+		img = img_el['element'].querySelectorAll('img')[0]
+		img.src = e.target.result
+		element_acceptor(img_el)
+	};
+	reader.readAsDataURL(img_el['image'])
+}
+
+function renderTemporaryImage(element, ea) {
+	document.getElementById("photos").appendChild(element['element'])
+	ea(element)
+}
+
+function uploadFileForImage(img_el, ea) {
+	form = new FormData()
+	form.append('newimage', img_el['image'])
+	image = img_el['element']
+	image.querySelectorAll('progress')[0].classList.remove('hidden')
+	$.ajax({
+		url: '/api/upload/'+$("#gallerynamesubmit").attr("path"),
+		type: 'POST',
+		data: form,
+		cache: false,
+		contentType: false,
+		processData: false,
+		success: function(data) {
+			console.log(data)
+			image.setAttribute('data-name', data)
+			image.querySelectorAll('progress')[0].classList.add('hidden')
+			ea(img_el)
+		},
+		xhr: function() {
+			var myXhr = $.ajaxSettings.xhr();
+			if (myXhr.upload) {
+				myXhr.upload.addEventListener('progress', function(e) {
+					if (e.lengthComputable) {
+						prog = image.querySelectorAll('progress')[0]
+						prog.setAttribute('value', e.loaded)
+						prog.setAttribute('max', e.total)
+					}
+				} , false);
+			}
+			return myXhr;
+		}
+	})
+}
+
 $(document).ready(function() {
 
 	if (document.location.hash) {
@@ -162,6 +208,21 @@ $(document).ready(function() {
 		}
 	});
 
+	$("#thumbnail_toggle").click(function(e) {
+		thmb = document.getElementsByClassName('thumbnailsetter')
+		for (i=0; i<thmb.length; i++) {
+			thmb[i].classList.toggle('hidden')
+		}
+	});
+
+	$('#imageupload').click(function(){
+		$('#imageupload_hidden').trigger('click');
+	});
+
+	$('#imageupload_hidden').change(function(e) {
+		queueUpload(e.target.files)
+	})
+
 	$(".albummanager").click(function(){
 		load_gallery_for_changes(this)
 	});
@@ -174,53 +235,5 @@ $(document).ready(function() {
 				location.reload()
 			})
 		}
-	});
-
-	$('#imgupload').on('click', function() {
-		console.log(new FormData($('#imguploadform')[0]))
-		$.ajax({
-			// Your server script to process the upload
-			url: '/api/upload/'+$("#gallerynamesubmit").attr("path"),
-			type: 'POST',
-
-			// Form data
-			data: new FormData($('#imguploadform')[0]),
-
-			// Tell jQuery not to process data or worry about content-type
-			// You *must* include these options!
-			cache: false,
-			contentType: false,
-			processData: false,
-
-			// Custom XMLHttpRequest
-			xhr: function() {
-				var myXhr = $.ajaxSettings.xhr();
-				if (myXhr.upload) {
-					// For handling the progress of the upload
-					myXhr.upload.addEventListener('progress', function(e) {
-						if (e.lengthComputable) {
-							$('progress').attr({
-								value: e.loaded,
-								max: e.total,
-							});
-						}
-					} , false);
-				}
-				return myXhr;
-			},
-			success: function(data) {
-				elem = document.getElementById("micropics")
-				data = data.slice(0, -1)
-				elem.appendChild(getPhotoDiv({
-					"Gallery": $("#gallerynamesubmit").attr("path"),
-					"Name":data,
-					"Descr":data
-				}))
-				$('progress').attr({
-					value: 0,
-					max: 100,
-				});
-			}
-		});
 	});
 });
