@@ -86,7 +86,7 @@ function makePhotoSquares(photos) {
 		createImageHolder,
 		renderTemporaryImage,
 		populateImagesWithData
-	], photos, function(){})
+	], photos)
 }
 
 function queueUpload(files) {
@@ -95,7 +95,7 @@ function queueUpload(files) {
 		renderTemporaryImage,
 		populateImageHolder,
 		uploadFileForImage
-	], files, console.log)
+	], files)
 }
 
 function load_gallery_for_changes(elem) {
@@ -139,7 +139,7 @@ function callSynchronously(funcs, data, cb) {
 		syncMap(data, f, function(d) {
 			callSynchronously(funcs, d, cb)
 		})
-	} else {
+	} else if (cb) {
 		cb(data)
 	}
 }
