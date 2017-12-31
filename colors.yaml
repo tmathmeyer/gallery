@@ -1,20 +1,20 @@
-background: "#FFFFFF"
-text_color_press: "#50332F"
-shadow_color_press: "#FFFFFF"
+background: "#fafafa"
+text_color_press: "#bbbbbb"
+shadow_color_press: "#6a1818"
 
 header_background: "#EEE"
 
-breadcrumb_color_1: "#A3A4A6"
-breadcrumb_text_1: "#962728"
+breadcrumb_color_1: "#7a2828"
+breadcrumb_text_1: "#7a2828"
 
-breadcrumb_color_2: "#BEC0C6"
-breadcrumb_text_2: "#2f4050"
+breadcrumb_color_2: "#852B2B"
+breadcrumb_text_2: "#852B2B"
 
-breadcrumb_color_3: "#6f8498"
-breadcrumb_text_3: "#2f4050"
+breadcrumb_color_3: "#902F2F"
+breadcrumb_text_3: "#902F2F"
 
-breadcrumb_color_4: "#7f94a8"
-breadcrumb_text_4: "#2f4050"
+breadcrumb_color_4: "#9B3333"
+breadcrumb_text_4: "#9B3333"
 
-breadcrumb_color_5: "#8fa4b8"
-breadcrumb_text_5: "#2f4050"
+breadcrumb_color_5: "#A73737"
+breadcrumb_text_5: "#A73737"
