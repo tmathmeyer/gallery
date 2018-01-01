@@ -1,0 +1,106 @@
+{{define "default"}}
+
+body {
+	background: {{.Background}};
+}
+
+a {
+	text-decoration: none;
+	color: inherit;
+}
+
+ul {
+	margin: 0;
+	padding: 0;
+}
+
+li {
+	text-align: center;
+}
+
+.letterpress {
+	  color:{{.TextColorPress}};
+	  font-family:Tahoma, Helvetica, Arial, sans-serif;
+	  text-align:center;
+	  text-shadow: 0px 1px 1px {{.ShadowColorPress}};
+}
+
+.indent {
+	box-shadow: inset 0 0 5px #000;
+}
+
+#content {
+	position: fixed;
+	overflow: hidden;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	margin-left: 5px;
+	margin-right: 5px;
+}
+
+#contentscroll {
+	position: absolute;
+	overflow-y: scroll;
+	left: 0;
+	padding-top: 5px;
+	height: 100%;
+	right: -17px;
+	display: grid;
+	grid-auto-rows: minmax(400px, 400px);
+}
+
+@media (min-width: 560px) {
+	#contentscroll {
+		grid-template-columns: repeat(1, 1fr);
+	}
+}
+
+@media (min-width: 1060px) {
+	#contentscroll {
+		grid-template-columns: repeat(2, 1fr);
+	}
+}
+
+@media (min-width: 1560px) {
+	#contentscroll {
+		grid-template-columns: repeat(4, 1fr);
+	}
+}
+
+@media (min-width: 2060px) {
+	#contentscroll {
+		grid-template-columns: repeat(5, 1fr);
+	}
+}
+
+@media (min-width: 2560px) {
+	#contentscroll {
+		grid-template-columns: repeat(6, 1fr);
+	}
+}
+
+@media (min-width: 3060px) {
+	#contentscroll {
+		grid-template-columns: repeat(7, 1fr);
+	}
+}
+
+.hidden {
+	display: none;
+}
+
+.options {
+	position: fixed;
+	list-style: none;
+	overflow: hidden;
+	right: 0;
+	top: 0;
+	background: none;
+}
+
+.options li a {
+	position: relative;
+}
+
+{{end}}

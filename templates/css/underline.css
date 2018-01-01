@@ -1,0 +1,91 @@
+{{define "underline"}}
+{{if .UnderlineCrumb}}
+
+#header {
+	height: 80px;
+	width: 100%;
+	left: 0;
+	top: 0;
+	position: absolute;
+	background: {{.HeaderBackground}};
+}
+
+.menu {
+	line-height: 80px;
+	font-size: 40px;
+	height: 80px;
+}
+
+.breadcrumb {
+	position: fixed;
+	list-style: none;
+	overflow: hidden;
+	left: 0;
+	top: 0;
+	background: none;
+}
+
+.breadcrumb li { 
+	float: left;
+	padding: 0 0 10px 44px;
+	text-shadow: none;
+}
+
+.options li { 
+	float: right;
+	padding: 0 44px 10px 0;
+	text-shadow: none;
+}
+
+
+.breadcrumb li a {
+	position: relative;
+}
+
+.breadcrumb li a::after {
+	content: " ";
+	display: block;
+	width: 0;
+	height: 0;
+	border-top: 10px solid transparent;
+	border-bottom: 10px solid transparent;
+	position: absolute;
+	top: 64px;
+	margin-top: -50px;
+	left: calc(100% + 20px);
+	z-index: 2;
+	border-left: 10px solid {{.TextColorPress}};
+}
+
+.breadcrumb li:last-child a::after {
+	display: none;
+}
+
+.breadcrumb li:hover {
+	text-decoration: underline;
+}
+
+.breadcrumb li:last-child {
+	text-decoration: none;
+}
+
+.breadcrumb li:last-child a {
+	cursor: default;
+}
+
+#content {
+	top: 80px;
+}
+
+
+.breadcrumb li:nth-child(1) a       { text-decoration-color: {{.BreadcrumbColor1}}; }
+.breadcrumb li:nth-child(2) a       { text-decoration-color: {{.BreadcrumbColor2}}; }
+.breadcrumb li:nth-child(3) a       { text-decoration-color: {{.BreadcrumbColor3}}; }
+.breadcrumb li:nth-child(4) a       { text-decoration-color: {{.BreadcrumbColor4}}; }
+.breadcrumb li:nth-child(5) a       { text-decoration-color: {{.BreadcrumbColor5}}; }
+
+{{end}}
+{{end}}
+
+
+

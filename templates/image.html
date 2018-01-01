@@ -8,11 +8,14 @@
     </head>
     <body>
         <div id="header" class="letterpress">
-            <ul class="breadcrumb">
+            <ul class="breadcrumb menu">
                 <li><a href="/">{{.Title}}</a></li>
                 <li><a href="/gallery/{{.GalleryPath}}">{{.GalleryName}}</a></li>
                 <li><a href="#">{{.ImagePath}}</a></li>
-                <li><a onclick="save('{{.ImageURL}}')">Save</a></li>
+            </ul>
+            <ul class="options menu">
+                <li><a href="/manage">login</a></li>
+                <li><a onclick="save()">save</a></li>
             </ul>
         </div>
         <div id="content">
