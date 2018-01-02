@@ -1,11 +1,11 @@
 .vertical-menu {
-    width: 125px;
-    position: fixed;
-    top: -2px;
-    left: 0;
-    height: 100%;
-    padding-top: 2px;
-    background: #fff;
+	width: 125px;
+	position: fixed;
+	top: -2px;
+	left: 0;
+	height: 100%;
+	padding-top: 2px;
+	background: #fff;
 }
 
 .vertical-menu::-webkit-scrollbar-track {
@@ -24,140 +24,250 @@
 
 
 #sidetopsection {
-    height: 250px;
-    width: 125px;
-    top: 0;
+	height: 250px;
+	width: 125px;
+	top: 0;
 }
 
 .menuitem {
-    height: 125px;
-    width: 125px;
-    padding: 0;
-    vertical-align: top;
-    position: relative;
-    float: left;
+	height: 125px;
+	width: 125px;
+	padding: 0;
+	vertical-align: top;
+	position: relative;
+	float: left;
 }
 
 .menuitem-icon {
-    position: absolute;
-    margin-left: 40px;
-    margin-right: 40px;
-    width: 40px;
-    height: 45px;
-    background-size: contain;
-    background-repeat: no-repeat;
-    top: 40px;
+	position: absolute;
+	margin-left: 40px;
+	margin-right: 40px;
+	width: 40px;
+	height: 45px;
+	background-size: contain;
+	background-repeat: no-repeat;
+	top: 40px;
 }
 
 .menuitem-text {
-    height: 25px;
-    top: 90px;
-    line-height: 25px;
-    font-size: 10px;
-    text-align: center;
-    position: relative;
-    background-color: #fff;
+	height: 25px;
+	top: 90px;
+	line-height: 25px;
+	font-size: 10px;
+	text-align: center;
+	position: relative;
+	background-color: #fff;
 }
 
 .menuitem:hover {
-    text-decoration: underline;
-    cursor: pointer;
+	text-decoration: underline;
+	cursor: pointer;
 }
 
 #galleryeditor {
-    position: fixed;
-    left: 125px;
-    right: 0;
-    height: 100%;
-    top: 0;
-    bottom: 0;
-    padding: 10px;
+	position: fixed;
+	left: 125px;
+	right: 0;
+	height: 100%;
+	top: 0;
+	bottom: 0;
+	padding: 10px;
 
-    font: 13px 'Lucida sans', Arial, Helvetica;
-    text-align: center;
-    background: #fafafa;
+	font: 13px 'Lucida sans', Arial, Helvetica;
+	text-align: center;
+	background: #fafafa;
 }
 
 #galleryeditor .fieldset {
-    height: 60px;
-    color: #394e61;
-    background: #f2f2f2;
-    padding: 0;
-    position: relative;
-    border-radius: 5px;
+	height: 60px;
+	color: #394e61;
+	background: #f2f2f2;
+	padding: 0;
+	position: relative;
+	border-radius: 5px;
 }
 
 #galleryeditor .fieldset input {
-    outline: none;
-    border: none;
+	outline: none;
+	border: none;
 
-    font-size: 30px;
-    position: relative;
-    top: 10px;
-    height: 40px;
-    line-height: 40px;
+	font-size: 30px;
+	position: relative;
+	top: 10px;
+	height: 40px;
+	line-height: 40px;
 
-    background: #f5f5f5;
-    text-align:center;
+	background: #f5f5f5;
+	text-align:center;
 }
 
 #galleryeditor .fieldset button {
-    font-size: 20px;
-    position: relative;
-    top: 10px;
-    height: 40px;
-    vertical-align: middle;
-    float: right;
-    margin-right: 10px;
+	font-size: 20px;
+	position: relative;
+	top: 10px;
+	height: 40px;
+	vertical-align: middle;
+	float: right;
+	margin-right: 10px;
 }
 
-#galleryeditor #controls {
-    height: 125px;
-    width: 100%;
-    display: block;
+#galleryeditor .controls {
+	height: 125px;
+	width: 100%;
+	display: block;
 }
 
 #photoholder {
-    overflow: scroll;
-    height: 100%;
+	overflow: scroll;
+	height: 100%;
 }
 
 #photos {
-    height: 100%;
-    line-height: 0;
-    -webkit-column-count: 5;
-    -webkit-column-gap:   0px;
-    -moz-column-count:    5;
-    -moz-column-gap:      0px;
-    column-count:         5;
-    column-gap:           0px;
+	height: 100%;
+	line-height: 0;
+	-webkit-column-count: 5;
+	-webkit-column-gap:	 0px;
+	-moz-column-count:	5;
+	-moz-column-gap:		0px;
+	column-count:	 5;
+	column-gap:		 0px;
 }
 
 .uploading-photo {
-    margin:10px;
-    height: auto;
-    float: right;
-    position: relative;
+	margin:10px;
+	height: auto;
+	float: right;
+	position: relative;
 }
 
 .uploading-photo img {
-    width: 100%;
-    overflow: auto;
+	width: 100%;
+	overflow: auto;
 }
 
 .uploading-photo .thumbnailsetter {
-    position: absolute;
-    height: 100%;
-    width: 100%;
-    background-color: rgba(0, 0, 0, 0.3);
-    left: 0px;
-    top: 0px;
+	position: absolute;
+	height: 100%;
+	width: 100%;
+	background-color: rgba(0, 0, 0, 0.3);
+	left: 0px;
+	top: 0px;
 
-    font-size: 60px;
-    line-height: 100px;
-    cursor: pointer;
+	font-size: 60px;
+	line-height: 100px;
+	cursor: pointer;
 }
 
 .uploading-photo .thumbnailsetter:hover {
-    color: #0f0;
+	color: #0f0;
+}
+
+#user_management {
+	z-index: 2;
+	position: fixed;
+	overflow: hidden;
+	left: 125px;
+	right: 0;
+	top: 0;
+	bottom: 0;
+	background: #f5f5f5;
+}
+
+#user_management .controls {
+	height: 125px;
+	width: 100%;
+}
+
+#user_management table {
+	width: 100%;
+}
+
+.pseudolink {
+	text-decoration: underline;
+	cursor: pointer;
+}
+
+@import "https://fonts.googleapis.com/css?family=Roboto:400,100,100italic,300,300italic,400italic,500,500italic,700,700italic,900,900italic&subset=latin,cyrillic";
+.table {
+	font-family: 'RobotoDraft', 'Roboto', 'Helvetica Neue, Helvetica, Arial', sans-serif;
+	width: 100%;
+	max-width: 100%;
+	margin-bottom: 2rem;
+	background-color: #fff;
+}
+.table > thead > tr,
+.table > tbody > tr,
+.table > tfoot > tr {
+	-webkit-transition: all 0.3s ease;
+	-o-transition: all 0.3s ease;
+	transition: all 0.3s ease;
+}
+.table > thead > tr > th,
+.table > tbody > tr > th,
+.table > tfoot > tr > th,
+.table > thead > tr > td,
+.table > tbody > tr > td,
+.table > tfoot > tr > td {
+	text-align: center;
+	padding: 1.6rem;
+	vertical-align: top;
+	border-top: 0;
+	-webkit-transition: all 0.3s ease;
+	-o-transition: all 0.3s ease;
+	transition: all 0.3s ease;
+}
+.table > thead > tr > th {
+	font-weight: 400;
+	color: #757575;
+	vertical-align: bottom;
+	border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+}
+.table > caption + thead > tr:first-child > th,
+.table > colgroup + thead > tr:first-child > th,
+.table > thead:first-child > tr:first-child > th,
+.table > caption + thead > tr:first-child > td,
+.table > colgroup + thead > tr:first-child > td,
+.table > thead:first-child > tr:first-child > td {
+	border-top: 0;
+}
+.table > tbody + tbody {
+	border-top: 1px solid rgba(0, 0, 0, 0.12);
+}
+.table .table {
+	background-color: #fff;
+}
+.table .no-border {
+	border: 0;
+}
+.table-condensed > thead > tr > th,
+.table-condensed > tbody > tr > th,
+.table-condensed > tfoot > tr > th,
+.table-condensed > thead > tr > td,
+.table-condensed > tbody > tr > td,
+.table-condensed > tfoot > tr > td {
+	padding: 0.8rem;
+}
+.table-bordered {
+	border: 0;
+}
+.table-bordered > thead > tr > th,
+.table-bordered > tbody > tr > th,
+.table-bordered > tfoot > tr > th,
+.table-bordered > thead > tr > td,
+.table-bordered > tbody > tr > td,
+.table-bordered > tfoot > tr > td {
+	border: 0;
+	border-bottom: 1px solid #e0e0e0;
+}
+.table-bordered > thead > tr > th,
+.table-bordered > thead > tr > td {
+	border-bottom-width: 2px;
+}
+.table-striped > tbody > tr:nth-child(odd) > td,
+.table-striped > tbody > tr:nth-child(odd) > th {
+	background-color: #f5f5f5;
+}
+.table-hover > tbody > tr:hover > td,
+.table-hover > tbody > tr:hover > th {
+	background-color: rgba(0, 0, 0, 0.12);
 }

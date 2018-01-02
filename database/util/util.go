@@ -47,6 +47,37 @@ func AddAdmin(db *sql.DB, user string, pass string) {
 	generated.InsertUserTable(db, admin)
 }
 
+func AddUser(db *sql.DB, user string, pass string) {
+	var acct generated.User
+	acct.Name = user
+	acct.Admin = 0
+	acct.Passhash, _ = ezcrypt.HashPassword(pass)
+	generated.InsertUserTable(db, acct)
+}
+
+func DeleteUser(db *sql.DB, user string) bool {
+	if IsUserAdmin(db, user) {
+		return false
+	}
+	return generated.DeleteFromUserTable(db, map[string]interface{}{
+		"Name": user,
+	}) == nil
+}
+
+func ChangePassword(db *sql.DB, user string, newpass string) bool {
+	hash, _ := ezcrypt.HashPassword(newpass)
+	return generated.UpdateUserTable(db, "Passhash", hash, map[string]interface{}{
+		"Name": user,
+	}) == nil
+}
+
+func ChangePasswordForId(db *sql.DB, id string, newpass string) bool {
+	hash, _ := ezcrypt.HashPassword(newpass)
+	return generated.UpdateUserTable(db, "Passhash", hash, map[string]interface{}{
+		"Id": id,
+	}) == nil
+}
+
 func ValidCredentials(db *sql.DB, user string, pass string) bool {
 	users, err := generated.QueryUserTable(db, map[string]interface{}{
 		"Name": user,

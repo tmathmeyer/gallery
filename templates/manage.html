@@ -10,8 +10,15 @@
 <body>
 	<div id="sidebar" class="vertical-menu">
 		<div id="sidetopsection">
-			<div class="menuitem">
+			<div id="change_password" class="menuitem">
 				<div class="menuitem-icon" style="background-image:url(/static/if_key.svg);">
+				</div>
+				<div class="menuitem-text">
+					Change Password
+				</div>
+			</div>
+			<div id="manage_users" class="menuitem">
+				<div class="menuitem-icon" style="background-image:url(/static/if_user.svg);">
 				</div>
 				<div class="menuitem-text">
 					Manage Users
@@ -43,6 +50,17 @@
 		{{end}}
 	</div>
 
+	<div id="user_management" class="hidden">
+		<div class="controls">
+			<div id="add_new_user" class="menuitem" title="Add New User">
+				<div class="menuitem-icon" style="background-image:url(/static/if_adduser.svg);">
+				</div>
+			</div>
+		</div>
+		<table id="usertable" class="table table-hover table-mc-light-blue">
+		</table>
+	</div>
+
 
 
 	<div id="galleryeditor" class="hidden">
@@ -50,7 +68,7 @@
 		  	<input id="gallerynamefield" type="text" value="<<galleryname>>">
 			<button id="gallerynamesubmit">Change Name</button>
 		</form>
-		<div id="controls">
+		<div class="controls">
 			<div class="menuitem" title="Select Map Coordinates or Upload GPX">
 				<div class="menuitem-icon" style="background-image:url(/static/if_map.svg);">
 				</div>

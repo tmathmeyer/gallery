@@ -59,6 +59,24 @@ func Update{type}Table(db *sql.DB, fieldname string, value interface{{}}, query 
 	return nil
 }}'''
 
+GODELETE_FMT = '''
+func DeleteFrom{type}Table(db *sql.DB, query map[string]interface{{}}) error {{
+	full_query := "DELETE FROM {type}_table " + gen_dep.CreateQuery(query)
+	stmt, tx, err := gen_dep.GetPreparedTransaction(db, full_query)
+	if err != nil {{
+		return err
+	}}
+	defer stmt.Close()
+
+	_, err = stmt.Exec()
+	if err != nil {{
+		return err
+	}}
+	tx.Commit()
+	return nil
+}}
+'''
+
 GOHEADER_FMT = '''
 package generated
 
@@ -172,6 +190,9 @@ def create_query_func_golang(name, columns):
 
 def create_update_func_golang(name, columns):
 	return GOMODIFY_FMT.format(type=name.capitalize())
+
+def create_delete_func_golang(name, columns):
+	return GODELETE_FMT.format(type=name.capitalize())
 	
 
 def create_struct_golang(name, columns):
@@ -179,7 +200,8 @@ def create_struct_golang(name, columns):
 	query = create_query_func_golang(name, columns)
 	insert = create_insert_func_golang(name, columns)
 	update = create_update_func_golang(name, columns)
-	return '\n'.join([GOHEADER_FMT, struct, query, insert, update])
+	delete = create_delete_func_golang(name, columns)
+	return '\n'.join([GOHEADER_FMT, struct, query, insert, update, delete])
 
 def gotypes(types):
 	for t in types:

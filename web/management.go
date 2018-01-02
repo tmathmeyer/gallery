@@ -116,6 +116,11 @@ func GalleryManagementHandler(db *sql.DB) http.Handler {
 
 func apiGalleryHandler(db *sql.DB) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if c,e:=r.Cookie("admin"); e!=nil || c.Value!="admin" {
+			http.Error(w, "Unauthorized", 403)
+			return
+		}
+
 		switch r.Method {
 		case "POST":
 			apiGalleryHandlerPost(db, w, r)
@@ -172,6 +177,11 @@ func apiImageHandlerPut(db *sql.DB, w http.ResponseWriter, r *http.Request, gall
 
 func apiImageHandler(db *sql.DB) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if c,e:=r.Cookie("admin"); e!=nil || c.Value!="admin" {
+			http.Error(w, "Unauthorized", 403)
+			return
+		}
+
 		path := GetPathParts(r, "/api/image/", 1)
 		if len(path) == 0 {
 			http.NotFound(w, r)
@@ -198,6 +208,65 @@ func apiImageHandler(db *sql.DB) http.Handler {
 		http.NotFound(w, r)
 	})
 }
+
+
+func apiUserManagement(db *sql.DB) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		user, err := r.Cookie("username")
+		if err != nil {
+			http.Error(w, "Invalid Request", 400)
+			return
+		}
+
+		r.ParseMultipartForm(32 << 20)
+		switch r.Method {
+		case "PUT":
+			uidl := r.Form["id"]
+			if len(uidl) == 1 && util.ChangePasswordForId(db, uidl[0], r.Form["password"][0]) {
+				http.Error(w, "OK", 200)
+			} else if len(uidl) != 1 && util.ChangePassword(db, user.Value, r.Form["password"][0]) {
+				http.Error(w, "OK", 200)
+			} else {
+				http.Error(w, "Failed", 500)
+			}
+			return
+		case "POST":
+			util.AddUser(db, r.Form["username"][0], r.Form["password"][0])
+			http.Error(w, "OK", 200)
+			return
+		case "DELETE":
+			username := GetPathParts(r, "/api/user/", 1)[0]
+			if util.DeleteUser(db, username) {
+				http.Error(w, "OK", 200)
+			} else {
+				http.Error(w, "Failed", 500)
+			}
+			return
+		case "GET":
+			if c,e:=r.Cookie("admin"); e!=nil || c.Value!="admin" {
+				http.Error(w, "Unauthorized", 403)
+				return
+			}
+			users, err := generated.QueryUserTable(db, map[string]interface{}{})
+			for i := range users {
+				users[i].Passhash = "redacted"
+			}
+			jData, err := json.Marshal(users)
+			if err != nil {
+				panic(err)
+				return
+			}
+
+			w.Header().Set("Content-Type", "application/json")
+			w.Write(jData)
+			return
+		}
+
+		http.Error(w, "Invalid Request", 400)
+	})
+}
+
+
 
 func apiImageUploadHandlerPost(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 	r.ParseMultipartForm(32 << 20)
@@ -249,6 +318,11 @@ func apiImageUploadHandlerPost(db *sql.DB, w http.ResponseWriter, r *http.Reques
 
 func apiImageUploadHandler(db *sql.DB) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if c,e:=r.Cookie("admin"); e!=nil || c.Value!="admin" {
+			http.Error(w, "Unauthorized", 403)
+			return
+		}
+
 		switch r.Method {
 		case "POST":
 			apiImageUploadHandlerPost(db, w, r)
@@ -263,6 +337,7 @@ func ApiHandler(db *sql.DB) http.Handler {
 		"gallery": apiGalleryHandler(db),
 		"image": apiImageHandler(db),
 		"upload": apiImageUploadHandler(db),
+		"user": apiUserManagement(db),
 	}
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

@@ -73,6 +73,125 @@ function setThumbnail() {
 	})
 }
 
+function change_password(id) {
+	pass = prompt("Please Enter a New Password (1/2):", "")
+	if (pass == null) {
+		return
+	}
+	if (pass.length < 5) {
+		alert("Password must be >= 5 characters")
+		return
+	}
+
+	repeat = prompt("Please Repeat New Password (2/2):", "")
+	if (pass != repeat) {
+		alert("Passwords do not match, Please Try Again")
+		change_password()
+		return
+	}
+
+	data = {"password": pass}
+	if (id != null) {
+		data['id'] = id
+	}
+
+	sendData('PUT', 0, '/api/user')(data, function(status) {
+		alert('Password Changed!')
+	})
+}
+
+function add_new_user() {
+	username = prompt("Please Enter a Username (1/3):", "")
+	if (username == null) {
+		return
+	}
+	pass = prompt("Please Ender a Password for "+username+" (2/3):", "")
+	if (pass == null) {
+		return
+	}
+	if (pass.length < 5) {
+		alert("Password must be >= 5 characters")
+		return
+	}
+	repeat = prompt("Please Repeat New Password (2/2):", "")
+	if (pass != repeat) {
+		alert("Passwords do not match, Please Start Over.")
+		add_new_user()
+		return
+	}
+	sendData('POST', 0, '/api/user')({
+		'username': username,
+		'password': pass
+	}, function(status) {
+		show_user_management(()=>show_user_management())
+	})
+}
+
+function span(ct, clazz){
+	s = document.createElement('span')
+	s.className = clazz
+	if (typeof ct == "string") {
+		s.innerHTML = ct;
+	} else {
+		s.appendChild(ct)
+	}
+	return s
+}
+
+function createTable(table, data, columnGenerators, cb) {
+	header = table.createTHead().insertRow();
+	for (n in columnGenerators) {
+		header.insertCell().appendChild(span(columnGenerators[n][0](), 'header'))
+	}
+
+	body = table.createTBody()
+	ct = 0;
+	data.forEach(function(e) {
+		row = body.insertRow()
+		for (n in columnGenerators) {
+			row.insertCell().appendChild(span(columnGenerators[n][1](e), 'user-row '+n))
+		}
+		ct ++;
+		if (ct == data.length) {
+			if (cb){(cb())}
+		}
+	})
+}
+
+function delete_user(username) {
+	sendData('DELETE', 0, '/api/user/'+username)({},function(status) {
+		show_user_management(()=>show_user_management())
+	})
+}
+
+function makeTableLink(text, call, args) {
+	sp = span(text, 'pseudolink')
+	sp.onclick = function() {
+		call.apply(null, args)
+	}
+	return sp
+}
+
+function populate_user_management(cb) {
+	sendData('GET', 0, '/api/user')({}, function(data) {
+		table = document.getElementById("usertable")
+		createTable(table, data, {
+			'Name': [()=>'Name', (n)=>n.Name],
+			'Passhash': [()=>'Change Password', (n)=>makeTableLink('change', change_password, [n.Id])],
+			'Admin': [()=>'Delete User', (n)=>n.Admin==1?'':makeTableLink('delete', delete_user, [n.Name])]
+		}, cb)
+	})
+}
+
+function show_user_management(cb) {
+	$('#user_management').toggleClass('hidden')
+	if (document.getElementById("usertable").innerHTML.trim() == "") {
+		populate_user_management(cb);
+	} else {
+		document.getElementById("usertable").innerHTML = ""
+	}
+}
+
 function populateImagesWithData(img_el, cb) {
 	img = img_el['image']
 	ele = img_el['element']
@@ -217,6 +336,18 @@ $(document).ready(function() {
 	$('#imageupload').click(function(){
 		$('#imageupload_hidden').trigger('click');
 	});
+
+	$('#change_password').click(function(){
+		change_password();
+	})
+
+	$('#manage_users').click(function() {
+		show_user_management();
+	})
+
+	$('#add_new_user').click(function() {
+		add_new_user();
+	})
 
 	$('#imageupload_hidden').change(function(e) {
 		queueUpload(e.target.files)

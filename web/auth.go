@@ -58,11 +58,19 @@ func VerifyAuthenticationMiddleware(authorized http.Handler, unauthorized http.H
 		}
 
 		secret := util.GetMetadataValue(db, "secret")
-		_, err := GetUserAuthentication(authentication, []byte(secret))
+		user, err := GetUserAuthentication(authentication, []byte(secret))
 
 		if err != nil {
 			unauthorized.ServeHTTP(w, r)
 		} else {
+			is_admin := "user"
+			if util.IsUserAdmin(db, user) {
+				is_admin = "admin"
+			}
+			admin := http.Cookie{Name:"admin", Value:is_admin}
+			cookie := http.Cookie{Name:"username", Value:user}
+			r.AddCookie(&cookie)
+			r.AddCookie(&admin)
 			authorized.ServeHTTP(w, r)
 		}
 	})
