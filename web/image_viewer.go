@@ -18,10 +18,9 @@ type CustomImageViewModel struct {
 	ImageURL         string
 }
 
-// GET /view/:gallery/:image
-func DragAndDropImageHandler(db *sql.DB) http.Handler {
+func genericImageViewer(db *sql.DB, path string, templatefile string) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		viewdata := GetPathParts(r, "/view/", 2)
+		viewdata := GetPathParts(r, path, 2)
 		galleryPath := viewdata[0]
 		photoName := viewdata[1]
 
@@ -55,7 +54,17 @@ func DragAndDropImageHandler(db *sql.DB) http.Handler {
 			ImageURL:         fmt.Sprintf("/img/%s/%s/O", galleryPath, photoName),
 		}
 
-		t, _ := template.ParseFiles("templates/image.html")
+		t, _ := template.ParseFiles("templates/"+templatefile)
 		t.Execute(w, Detail)
-	})
+	}) 
+}
+
+// GET /view/:gallery/:image
+func DragAndDropImageHandler(db *sql.DB) http.Handler {
+	return genericImageViewer(db, "/view/", "image.html")
+}
+
+// GET /pano/:gallery/:image
+func PanoramicImageHandler(db *sql.DB) http.Handler {
+	return genericImageViewer(db, "/pano/", "pano_view.html")
 }

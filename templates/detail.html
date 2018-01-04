@@ -3,11 +3,13 @@
     <link rel="stylesheet" type="text/css" href="/static/gallery.css">
     <link rel="stylesheet" type="text/css" href="/conf/common.css">
     <script>
-      function load_image(gal, img) {
+      function load_image(gal, img, type) {
         if(/android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(navigator.userAgent.toLowerCase())) {
           window.open("/img/full/"+gal+"/"+img,'_blank');
-        } else {
+        } else if (type == 0) {
           window.open("/view/"+gal+"/"+img, '_self');
+        } else if (type == 1) {
+          window.open("/pano/"+gal+"/"+img, '_self');
         }
       }
     </script>
@@ -28,7 +30,7 @@
         {{range .}}
         <div class="photo"
              style="background: url(/img/{{$.GalleryID}}/{{.Name}}/TN); background-size:cover;"
-             onclick="load_image('{{$.GalleryID}}','{{.Name}}')">
+             onclick="load_image('{{$.GalleryID}}','{{.Name}}', {{.Type}})">
         </div>
         {{end}}
         {{end}}

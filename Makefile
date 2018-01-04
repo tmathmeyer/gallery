@@ -1,5 +1,6 @@
 bin:
 	cd database && python generate.py
+	make -C exif/
 	go build -o server main.go
 
 run:

@@ -10,6 +10,7 @@ A really simple host-it-yourself photo gallery project
  - `go get golang.org/x/crypto/bcrypt`
  - `go get gopkg.in/yaml.v2`
 
+
 ## Installation
  - See dependancies section for what to install
  - run `make init` to edit a preferences file and get things set up.

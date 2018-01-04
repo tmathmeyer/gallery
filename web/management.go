@@ -5,14 +5,17 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
-	"../database/util"
-	"../database/generated"
 	"log"
 	"os"
 	"encoding/json"
 	"path/filepath"
 	"strings"
 	"io"
+	"os/exec"
+
+
+	"../database/util"
+	"../database/generated"
 )
 
 
@@ -266,6 +269,15 @@ func apiUserManagement(db *sql.DB) http.Handler {
 	})
 }
 
+func testImageType(filepath string) int {
+	cmd := exec.Command("./exif/bin/photosphere", filepath)
+	err := cmd.Run()
+	if err != nil {
+		return 0 // Not a panoramic
+	} else {
+		return 1 // A panoramic / photosphere
+	}
+}
 
 
 func apiImageUploadHandlerPost(db *sql.DB, w http.ResponseWriter, r *http.Request) {
@@ -306,7 +318,7 @@ func apiImageUploadHandlerPost(db *sql.DB, w http.ResponseWriter, r *http.Reques
 	io.Copy(f, file)
 
 	var photo generated.Photo
-	photo.Type = 0
+	photo.Type = testImageType(writeToPath)
 	photo.Name = filename+fileExtension
 	photo.Description = filename+fileExtension
 	photo.Gallery = galleryPath

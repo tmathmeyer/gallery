@@ -18,6 +18,7 @@ func setupHandlers(db *sql.DB) {
 	http.Handle("/gallery/", web.GalleryDetailhandler(db))
 	http.Handle("/gdata/", web.GalleryDataHandler(db))
 	http.Handle("/view/", web.DragAndDropImageHandler(db))
+	http.Handle("/pano/", web.PanoramicImageHandler(db))
 	http.Handle("/img/", web.ImageRawHandler(db))
 
 	http.Handle("/conf/", web.CssConfigureHandler(db))

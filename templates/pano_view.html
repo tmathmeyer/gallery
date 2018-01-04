@@ -1,37 +1,46 @@
-<html lang="en">
+<html>
     <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Photo Sphere Viewer</title>
-        <link rel="icon" type="image/png" href="http://photo-sphere-viewer.js.org/favicon.png">
+        <link rel="stylesheet" type="text/css" href="/static/breadcrumb.css">
+        <link rel="stylesheet" type="text/css" href="/conf/common.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="/static/gpx.js"></script>
+        <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     </head>
     <body>
-        <div class="container bs-docs-container">
-            <div class="row">
-                <div class="col-md-9" role="main">
-                    <div id="photosphere">
-                    </div>
-                    <link rel="stylesheet" href="/static/photo-sphere-viewer.min.css">
-                    <script src="/static/three.min.js"></script>
-                    <script src="/static/D.min.js"></script>
-                    <script src="/static/doT.min.js"></script>
-                    <script src="/static/uevent.min.js"></script>
-                    <script src="/static/CanvasRenderer.js"></script>
-                    <script src="/static/Projector.js"></script>
-                    <script src="/static/photo-sphere-viewer.min.js"></script>
-                    <script>
-                        var PSV = new PhotoSphereViewer({
-                            panorama: '/pan/raw/{{.GalleryID}}/{{.URI}}',
-                            container: 'photosphere',
-                            caption: '<b>&copy; {{.CopyrightHolder}}</b>',
-                            loading_img: 'http://photo-sphere-viewer.js.org/assets/photosphere-logo.gif',
-                            navbar: 'autorotate zoom caption fullscreen',
-                            default_fov: 70,
-                            mousewheel: true,
-                        });
-                    </script>
-                </div>
+        <div id="header" class="letterpress">
+            <ul class="breadcrumb menu">
+                <li><a href="/">{{.Title}}</a></li>
+                <li><a href="/gallery/{{.GalleryPath}}">{{.GalleryName}}</a></li>
+                <li><a href="#">{{.ImagePath}}</a></li>
+            </ul>
+            <ul class="options menu">
+                <li><a href="/manage">login</a></li>
+                <li><a href="{{.ImageURL}}" download="{{.ImagePath}}">save</a></li>
+            </ul>
+        </div>
+        <div id="content">
+            <div id="photosphere">
             </div>
+            <link rel="stylesheet" href="/static/photo-sphere-viewer.min.css">
+            <script src="/static/three.min.js"></script>
+            <script src="/static/D.min.js"></script>
+            <script src="/static/doT.min.js"></script>
+            <script src="/static/uevent.min.js"></script>
+            <script src="/static/CanvasRenderer.js"></script>
+            <script src="/static/Projector.js"></script>
+            <script src="/static/photo-sphere-viewer.min.js"></script>
+            <script>
+                var PSV = new PhotoSphereViewer({
+                    panorama: '{{.ImageURL}}',
+                    container: 'photosphere',
+                    caption: '<b>&copy; {{.Title}}</b>',
+                    loading_img: 'http://photo-sphere-viewer.js.org/assets/photosphere-logo.gif',
+                    navbar: 'autorotate zoom caption fullscreen',
+                    default_fov: 70,
+                    mousewheel: true,
+                });
+            </script>
         </div>
     </body>
 </html>
+
