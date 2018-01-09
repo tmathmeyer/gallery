@@ -79,7 +79,7 @@ func apiGalleryHandlerPut(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 
 	galleryPath := path[0]
 	r.ParseForm()
-	props := []string{"name", "splash", "lat", "lon"}
+	props := []string{"name", "splash", "lat", "lon", "hasgpx"}
 	for _, prop := range props {
 		gn := r.Form[prop]
 		if len(gn) == 1 {
@@ -280,15 +280,15 @@ func testImageType(filepath string) int {
 }
 
 
-func apiImageUploadHandlerPost(db *sql.DB, w http.ResponseWriter, r *http.Request) {
+func apiImageUploadHandler(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 	r.ParseMultipartForm(32 << 20)
-	path := GetPathParts(r, "/api/upload/", 1)
-	if len(path) != 1 {
+	path := GetPathParts(r, "/api/upload/", 2)
+	if len(path) != 2 {
 		http.NotFound(w, r)
 		return
 	}
 
-	galleryPath := path[0]
+	galleryPath := path[1]
 
 	imageStore := util.GetMetadataValue(db, "imageStore")
 
@@ -328,16 +328,62 @@ func apiImageUploadHandlerPost(db *sql.DB, w http.ResponseWriter, r *http.Reques
 	return
 }
 
-func apiImageUploadHandler(db *sql.DB) http.Handler {
+func apiGpxUploadHandler(db *sql.DB, w http.ResponseWriter, r *http.Request) {
+	r.ParseMultipartForm(32 << 15)
+	path := GetPathParts(r, "/api/upload/", 2)
+	if len(path) != 2 {
+		http.NotFound(w, r)
+		return
+	}
+
+	galleryPath := path[1]
+
+	imageStore := util.GetMetadataValue(db, "dataStore")
+
+	file, _, err := r.FormFile("gpx")
+	if err != nil {
+		http.Error(w, "Upload failed", 500)
+		fmt.Println(err)
+		return
+	}
+	defer file.Close()
+
+	writeToPath := fmt.Sprintf("%s/%s/route.gpx", imageStore, galleryPath)
+
+	f, err := os.OpenFile(writeToPath, os.O_WRONLY|os.O_CREATE, 0666)
+	if err != nil {
+		http.Error(w, "Upload failed", 500)
+		return
+	}
+	defer f.Close()
+	io.Copy(f, file)
+
+	generated.UpdateGalleryTable(db, "hasgpx", 1, map[string]interface{}{
+		"Path": galleryPath,
+	})
+
+	http.Error(w, "OK", 200)
+}
+
+func apiUploadHandler(db *sql.DB) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if c,e:=r.Cookie("admin"); e!=nil || c.Value!="admin" {
 			http.Error(w, "Unauthorized", 403)
 			return
 		}
 
-		switch r.Method {
-		case "POST":
-			apiImageUploadHandlerPost(db, w, r)
+		path := GetPathParts(r, "/api/upload/", 2)
+		if len(path) != 2 {
+			http.NotFound(w, r)
+			return
+		}
+
+		switch path[0] {
+		case "image":
+			apiImageUploadHandler(db, w, r)
+			return
+		case "gpx":
+			apiGpxUploadHandler(db, w, r)
 			return
 		}
 		http.NotFound(w, r)
@@ -348,7 +394,7 @@ func ApiHandler(db *sql.DB) http.Handler {
 	types := map[string]http.Handler{
 		"gallery": apiGalleryHandler(db),
 		"image": apiImageHandler(db),
-		"upload": apiImageUploadHandler(db),
+		"upload": apiUploadHandler(db),
 		"user": apiUserManagement(db),
 	}
 

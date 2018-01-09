@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"../database/util"
 	"../database/generated"
+	"encoding/json"
 )
 
 type GalleryDetailModel struct {
@@ -37,8 +38,23 @@ func GalleryDataHandler(db *sql.DB) http.Handler {
 
 		switch resourceType {
 		case "gpx":
-			resource := fmt.Sprintf("%s/%d/route.gpx", dataFsLocation, galleries[0].Id)
+			resource := fmt.Sprintf("%s/%s/route.gpx", dataFsLocation, galleries[0].Path)
 			http.ServeFile(w, r, resource)
+		case "location":
+			result := map[string]interface{}{
+				"lat": galleries[0].Lat,
+				"lon": galleries[0].Lon,
+				"hasgpx": galleries[0].Hasgpx,
+			}
+			jData, err := json.Marshal(result)
+			if err != nil {
+				panic(err)
+				return
+			}
+
+			w.Header().Set("Content-Type", "application/json")
+			w.Write(jData)
+
 		default:
 			http.NotFound(w, r)
 		}

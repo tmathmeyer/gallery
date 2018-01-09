@@ -194,16 +194,14 @@ function readGpxPath(path, cb) {
 	})
 }
 
-function path2LatLon(path, result) {
+function path2LatLon(path) {
 	var bounds = new google.maps.LatLngBounds();
 
 	for (var i = 0; i < path.length; i++) {
 		bounds.extend(path[i].getPath().getAt(0))
 	}
 
-	center = bounds.getCenter()
-	result.lat = center.lat()
-	result.lon = center.lng()
+	return bounds
 }
 
 function getLocation(path, lat, lon, cb) {

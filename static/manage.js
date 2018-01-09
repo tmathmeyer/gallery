@@ -284,7 +284,7 @@ function uploadFileForImage(img_el, ea) {
 	image = img_el['element']
 	image.querySelectorAll('progress')[0].classList.remove('hidden')
 	$.ajax({
-		url: '/api/upload/'+$("#gallerynamesubmit").attr("path"),
+		url: '/api/upload/image/'+$("#gallerynamesubmit").attr("path"),
 		type: 'POST',
 		data: form,
 		cache: false,
@@ -311,10 +311,30 @@ function uploadFileForImage(img_el, ea) {
 	})
 }
 
+function uploadGPX(map) {
+	form = new FormData()
+	form.append('gpx', document.getElementById('gpxupload_hidden').files[0])
+	$.ajax({
+		url: '/api/upload/gpx/'+$("#gallerynamesubmit").attr("path"),
+		type: 'POST',
+		data: form,
+		cache: false,
+		contentType: false,
+		processData: false,
+		success: function(data) {
+			render_gpx(map, {'lat': 0, 'lon': 0})
+		}
+	})
+}
+
+function get_gallery_name() {
+	return document.location.hash.slice(1);
+}
+
 $(document).ready(function() {
 
 	if (document.location.hash) {
-		load_gallery_for_changes(document.getElementById(document.location.hash.slice(1)))
+		load_gallery_for_changes(document.getElementById(get_gallery_name()))
 	}
 
 	$("#createButton").click(function(e) {
@@ -357,6 +377,10 @@ $(document).ready(function() {
 		load_gallery_for_changes(this)
 	});
 
+	$('#upload-gpx').click(function(){
+		$('#gpxupload_hidden').trigger('click');
+	});
+
 	$("#gallerynamesubmit").click(function() {
 		name = $("#gallerynamefield").val()
 		path = $("#gallerynamesubmit").attr("path")
@@ -367,3 +391,100 @@ $(document).ready(function() {
 		}
 	});
 });
+
+function render_gpx(map, location_data) {
+	$.ajax({url: '/gdata/'+get_gallery_name()+'/gpx', dataType: "xml",
+		success: function(data) {
+			mapGPX = gpxRaw2Path(data)
+			renderGpx(mapGPX, map)
+			google.maps.event.trigger(map, 'resize')
+			map.fitBounds(path2LatLon(mapGPX))
+		},
+		error: function(d){
+			render_marker(map, location_data.lat, location_data.lon)
+		}
+	});
+}
+
+function render_marker(map, lat, lng) {
+	center = new google.maps.LatLng(lat, lng)
+	map.setZoom(7)
+	map.marker = new google.maps.Marker({
+		position: center,
+		map: map
+	})
+	google.maps.event.trigger(map, 'resize')
+	map.setCenter(center)
+}
+
+function render_map_panel(map, getter) {
+	getter({}, function(location_data) {
+		console.log(location_data)
+		if (location_data.hasgpx) {
+			render_gpx(map, location_data)
+		} else {
+			render_marker(map, location_data.lat, location_data.lon)
+		}
+	})
+}
+
+function init_map() {
+	(function(element){
+		map = new google.maps.Map(element, {
+			center: {lat: 0, lng: 0},
+			zoom: 7,
+			mapTypeId: 'terrain',
+			disableDefaultUI: true
+		});
+		map.is_setting_location = false
+
+		map_element = $(element)
+		map_configuration = $("#map_configuration")
+
+		function add_one_time_click_listener() {
+			$('#set-location').clickonce(function(e) {
+				map.is_setting_location = true
+				$('#set-location').toggleClass('highlight-toggle')
+			})
+		}
+
+		map.addListener('click', function(c){
+			if (map.is_setting_location) {
+				map.is_setting_location = false
+				sendData('PUT', get_gallery_name())({
+					'lat': c.latLng.lat(),
+					'lon': c.latLng.lng()
+				}, function() {
+					map.marker.setMap(null)
+					map.marker = new google.maps.Marker({
+						position: c.latLng,
+						map: map
+					})
+					map.panTo(c.latLng)
+					$('#set-location').toggleClass('highlight-toggle')
+				})
+				add_one_time_click_listener()
+			}
+		})
+
+		$('.locationconfig-display').click(function() {
+			map_configuration.toggleClass('hidden')
+			map_configuration.append(map_element)
+			render_map_panel(map, sendData('GET', 0, '/gdata/'+get_gallery_name()+'/location'))
+		})
+
+		$('.locationconfig-destroy').click(function() {
+			map_configuration.toggleClass('hidden')
+			$('#blackhole').append(map_element)
+		})
+
+		$('#gpxupload_hidden').unbind()
+		$('#gpxupload_hidden').change(function() {
+			uploadGPX(map);
+		})
+
+		add_one_time_click_listener()
+
+	})(document.getElementById("map-conf-map"))
+}
+

@@ -19,6 +19,7 @@ tables:
     lat: [REAL]
     lon: [REAL]
     splash: [TEXT]
+    hasgpx: [INTEGER]
 
   user:
     id: [INTEGER, PRIMARY KEY, AUTOINCREMENT]

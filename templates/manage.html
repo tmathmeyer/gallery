@@ -3,8 +3,20 @@
 	<link rel="stylesheet" type="text/css" href="/static/manage.css">
 	<link rel="stylesheet" type="text/css" href="/static/gallerytile.css">
 	<link rel="stylesheet" type="text/css" href="/conf/common.css">
-
+	<script src="/static/gpx.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script>
+		$.fn.extend({
+			'clickonce': function(func) {
+				a = this;
+				b = function() {
+					func.apply(this, arguments);
+					a.off('click', b)
+				}
+				a.on('click', b)
+			}
+		}) 
+	</script>
 	<script src="/static/manage.js"></script>
 </head>
 <body>
@@ -50,7 +62,7 @@
 		{{end}}
 	</div>
 
-	<div id="user_management" class="hidden">
+	<div id="user_management" class="hidden opt-control">
 		<div class="controls">
 			<div id="add_new_user" class="menuitem" title="Add New User">
 				<div class="menuitem-icon" style="background-image:url(/static/if_adduser.svg);">
@@ -61,6 +73,29 @@
 		</table>
 	</div>
 
+	<div id="map_configuration" class="hidden opt-control">
+		<div class="controls">
+			<div class="menuitem locationconfig-destroy" title="Exit Map Editor">
+				<div class="menuitem-icon" style="background-image:url(/static/if_close.svg);">
+				</div>
+			</div>
+			<div id="upload-gpx" class="menuitem" title="Upload GPX">
+				<div class="menuitem-icon" style="background-image:url(/static/if_upload.svg);">
+				</div>
+			</div>
+			<input id="gpxupload_hidden" type="file" style="display:none"/>
+			<div id="set-location" class="menuitem" title="Add Map Pin">
+				<div class="menuitem-icon" style="background-image:url(/static/if_map_pin.svg);">
+				</div>
+			</div>
+		</div>
+		<div id='blackhole' class='hidden'>
+			<div id="map-conf-map">
+
+			</div>
+		</div>
+	</div>
+
 
 
 	<div id="galleryeditor" class="hidden">
@@ -69,7 +104,7 @@
 			<button id="gallerynamesubmit">Change Name</button>
 		</form>
 		<div class="controls">
-			<div class="menuitem" title="Select Map Coordinates or Upload GPX">
+			<div class="menuitem locationconfig-display" title="Select Map Coordinates or Upload GPX">
 				<div class="menuitem-icon" style="background-image:url(/static/if_map.svg);">
 				</div>
 			</div>
@@ -92,5 +127,6 @@
 			</div>
 		</div>
 	</div>
+	<script src="https://maps.googleapis.com/maps/api/js?key={{.APIKey}}&callback=init_map" async defer></script>
 </body>
 </html>
