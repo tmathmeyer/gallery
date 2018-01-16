@@ -436,6 +436,7 @@ function init_map() {
 			mapTypeId: 'terrain',
 			disableDefaultUI: true
 		});
+		map.marker = null;
 		map.is_setting_location = false
 
 		map_element = $(element)
@@ -455,7 +456,9 @@ function init_map() {
 					'lat': c.latLng.lat(),
 					'lon': c.latLng.lng()
 				}, function() {
-					map.marker.setMap(null)
+					if (map.marker) {
+						map.marker.setMap(null)
+					}
 					map.marker = new google.maps.Marker({
 						position: c.latLng,
 						map: map

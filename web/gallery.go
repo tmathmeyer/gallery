@@ -27,7 +27,7 @@ func GalleryDataHandler(db *sql.DB) http.Handler {
 		resourceType := parts[1]
 
 		galleries, err := generated.QueryGalleryTable(db, map[string]interface{}{
-			"Name": galleryName,
+			"Path": galleryName,
 		})
 		if err != nil || len(galleries) != 1 {
 			http.NotFound(w, r)

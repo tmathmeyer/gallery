@@ -22,6 +22,9 @@
 	background-color: #000000;
 }
 
+#sidebar {
+    overflow-y: scroll;
+}
 
 #sidetopsection {
 	height: 250px;
@@ -122,19 +125,21 @@
 }
 
 #photoholder {
-	overflow: scroll;
+	overflow: hidden;
 	height: 100%;
+	position: relative;
 }
 
 #photos {
-	height: 100%;
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
 	line-height: 0;
-	-webkit-column-count: 5;
-	-webkit-column-gap:	 0px;
-	-moz-column-count:	5;
-	-moz-column-gap:		0px;
-	column-count:	 5;
-	column-gap:		 0px;
+	grid-template-columns: repeat(5, 1fr);
+	overflow-y: scroll;
+	display: grid;
 }
 
 .uploading-photo {
