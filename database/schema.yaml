@@ -20,6 +20,9 @@ tables:
     lon: [REAL]
     splash: [TEXT]
     hasgpx: [INTEGER]
+    owner: [INTEGER]
+    is_protected: [INTEGER]
+    whitelist: [TEXT]
 
   user:
     id: [INTEGER, PRIMARY KEY, AUTOINCREMENT]
