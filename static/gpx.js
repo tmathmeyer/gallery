@@ -59,7 +59,11 @@ function getSpeed(trkpt) {
     if (!trkpt) {
         return 0;
     }
-	return Number(trkpt.getElementsByTagName('speed')[0].childNodes[0].nodeValue);
+    var speed = trkpt.getElementsByTagName('speed');
+    if (speed.length > 0) {
+        return Number(speed[0].childNodes[0].nodeValue);
+    }
+    return 1;
 }
 
 function hslToHex(h, s, l) {
@@ -184,7 +188,7 @@ function gpxRaw2Path(gpxdata) {
 }
 
 function readGpxPath(path, cb) {
-	$.ajax({url: '/d/'+path+'/gpx', dataType: "xml",
+	$.ajax({url: '/gdata/'+path+'/gpx', dataType: "xml",
 		success: function(data) {
 			cb(gpxRaw2Path(data))
 		}

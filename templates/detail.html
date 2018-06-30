@@ -5,7 +5,7 @@
     <script>
       function load_image(gal, img, type) {
         if(/android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(navigator.userAgent.toLowerCase())) {
-          window.open("/img/full/"+gal+"/"+img,'_blank');
+          window.open("/img/"+gal+"/"+img+"/F",'_blank');
         } else if (type == 0) {
           window.open("/view/"+gal+"/"+img, '_self');
         } else if (type == 1) {

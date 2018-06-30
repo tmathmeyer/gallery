@@ -25,9 +25,10 @@
 				{{with .Galleries}}
 				{{range .}}
 				<div class="albumcover"
+				     onclick="location.href='/gallery/{{.Path}}'"
 				     style="background: url(/img/{{.Path}}/{{.Splash}}/TN);
 				            background-size:cover;">
-					<div class="covertitle albumletterpress" onclick="location.href='/gallery/{{.Path}}'">
+					<div class="covertitle albumletterpress">
 						{{.Name}}
 					</div>
 				</div>
