@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"fmt"
 	"./web"
+	"./web/api"
 	"./database/generated"
 )
 
@@ -28,9 +29,12 @@ func setupHandlers(db *sql.DB) {
 	http.Handle("/manage", web.VerifyAuthenticationMiddleware(
 							web.GalleryManagementHandler(db),
 							web.LoginPage(), db))
-	http.Handle("/api/", web.VerifyAuthenticationMiddleware(web.ApiHandler(db), nil, db))
+	http.Handle("/api/v0/", web.VerifyAuthenticationMiddleware(web.ApiHandler(db), nil, db))
 
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
+
+	API := api.API{"_dev"}
+	API.AcceptEndpointHandlerAuthenticated(api.Gallery{db})
 }
 
 func main() {

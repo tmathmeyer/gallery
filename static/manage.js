@@ -9,9 +9,9 @@ function elem_prop(elem, prop) {
 }
 
 function sendData(type, gallery, special) {
-	url = '/api/gallery'
+	url = '/api/v_dev/gallery/'
 	if (type == 'PUT') {
-		url += '/'+gallery
+		url += gallery
 	}
 	if (typeof special !== 'undefined') {
 		url = special
@@ -95,7 +95,7 @@ function change_password(id) {
 		data['id'] = id
 	}
 
-	sendData('PUT', 0, '/api/user')(data, function(status) {
+	sendData('PUT', 0, '/api/v0/user')(data, function(status) {
 		alert('Password Changed!')
 	})
 }
@@ -119,7 +119,7 @@ function add_new_user() {
 		add_new_user()
 		return
 	}
-	sendData('POST', 0, '/api/user')({
+	sendData('POST', 0, '/api/v0/user')({
 		'username': username,
 		'password': pass
 	}, function(status) {
@@ -159,7 +159,7 @@ function createTable(table, data, columnGenerators, cb) {
 }
 
 function delete_user(username) {
-	sendData('DELETE', 0, '/api/user/'+username)({},function(status) {
+	sendData('DELETE', 0, '/api/v0/user/'+username)({},function(status) {
 		show_user_management(()=>show_user_management())
 	})
 }
@@ -173,7 +173,7 @@ function makeTableLink(text, call, args) {
 }
 
 function populate_user_management(cb) {
-	sendData('GET', 0, '/api/user')({}, function(data) {
+	sendData('GET', 0, '/api/v0/user')({}, function(data) {
 		table = document.getElementById("usertable")
 		createTable(table, data, {
 			'Name': [()=>'Name', (n)=>n.Name],
@@ -230,7 +230,7 @@ function load_gallery_for_changes(elem) {
 	$("#galleryeditor").removeClass("hidden")
 
 	document.getElementById("photos").innerHTML = ''
-	sendData('GET', null, '/api/image/'+path)(null, makePhotoSquares)
+	sendData('GET', null, '/api/v0/image/'+path)(null, makePhotoSquares)
 }
 
 function syncMap(iterable, asyncMapper, acceptor) {
@@ -284,7 +284,7 @@ function uploadFileForImage(img_el, ea) {
 	image = img_el['element']
 	image.querySelectorAll('progress')[0].classList.remove('hidden')
 	$.ajax({
-		url: '/api/upload/image/'+$("#gallerynamesubmit").attr("path"),
+		url: '/api/v0/upload/image/'+$("#gallerynamesubmit").attr("path"),
 		type: 'POST',
 		data: form,
 		cache: false,
@@ -315,7 +315,7 @@ function uploadGPX(map) {
 	form = new FormData()
 	form.append('gpx', document.getElementById('gpxupload_hidden').files[0])
 	$.ajax({
-		url: '/api/upload/gpx/'+$("#gallerynamesubmit").attr("path"),
+		url: '/api/v0/upload/gpx/'+$("#gallerynamesubmit").attr("path"),
 		type: 'POST',
 		data: form,
 		cache: false,

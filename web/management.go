@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
-	"log"
 	"os"
 	"encoding/json"
 	"path/filepath"
@@ -17,84 +16,6 @@ import (
 	"../database/util"
 	"../database/generated"
 )
-
-
-// Creates a gallery
-func apiGalleryHandlerPost(db *sql.DB, w http.ResponseWriter, r *http.Request) {
-	r.ParseForm()
-	gn := r.Form["galleryname"]
-	if len(gn) != 1 {
-		http.Error(w, "missing galleryname", 400)
-		return
-	}
-
-	galleryname := gn[0]
-
-	dataStore := util.GetMetadataValue(db, "dataStore")
-	imageStore := util.GetMetadataValue(db, "imageStore")
-
-	if imageStore == "" || dataStore == "" {
-		log.Fatal("Can't operate without data and image locations")
-		return
-	}
-
-	localpath := util.MakeFriendlyPath(galleryname)
-	for FExists(imageStore + "/" + localpath) {
-		localpath = localpath + "0"
-	}
-
-	err := os.Mkdir(imageStore + "/" + localpath, os.ModePerm)
-	if err != nil {
-		http.Error(w, "Failed to make image store: "+localpath, 500)
-	}
-	err = os.Mkdir(dataStore + "/" + localpath, os.ModePerm)
-	if err != nil {
-		http.Error(w, "Failed to make data store: "+localpath, 500)
-	}
-
-	err = os.Symlink("../../static/placeholder.png", imageStore + "/" + localpath + "/480placeholder.png")
-	if err != nil {
-		http.NotFound(w, r)
-		return
-	}
-
-
-	var gallery generated.Gallery
-	gallery.Name = galleryname
-	gallery.Path = localpath
-	gallery.Splash = "placeholder.png"
-	gallery.Lat = 0
-	gallery.Lon = 0
-	generated.InsertGalleryTable(db, gallery)
-	
-	http.Error(w, "OK", 200)
-}
-
-func apiGalleryHandlerPut(db *sql.DB, w http.ResponseWriter, r *http.Request) {
-	path := GetPathParts(r, "/api/gallery/", 1)
-	if len(path) != 1 {
-		http.NotFound(w, r)
-		return
-	}
-
-	galleryPath := path[0]
-	r.ParseForm()
-	props := []string{"name", "splash", "lat", "lon", "hasgpx"}
-	for _, prop := range props {
-		gn := r.Form[prop]
-		if len(gn) == 1 {
-			err := generated.UpdateGalleryTable(db, prop, gn[0], map[string]interface{}{
-				"Path": galleryPath,
-			})
-			if err != nil {
-				http.Error(w, "Failed to change property " + prop, 500)
-				return
-			}
-		}
-	}
-	http.Error(w, "OK", 200)
-
-}
 
 func GalleryManagementHandler(db *sql.DB) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -114,26 +35,6 @@ func GalleryManagementHandler(db *sql.DB) http.Handler {
 			APIKey:    apiKey,
 			Galleries: galleries}
 		t.Execute(w, index)
-	})
-}
-
-func apiGalleryHandler(db *sql.DB) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if c,e:=r.Cookie("admin"); e!=nil || c.Value!="admin" {
-			http.Error(w, "Unauthorized", 403)
-			return
-		}
-
-		switch r.Method {
-		case "POST":
-			apiGalleryHandlerPost(db, w, r)
-			return
-
-		case "PUT":
-			apiGalleryHandlerPut(db, w, r)
-			return
-		}
-		http.NotFound(w, r)
 	})
 }
 
@@ -185,7 +86,7 @@ func apiImageHandler(db *sql.DB) http.Handler {
 			return
 		}
 
-		path := GetPathParts(r, "/api/image/", 1)
+		path := GetPathParts(r, "/api/v0/image/", 1)
 		if len(path) == 0 {
 			http.NotFound(w, r)
 			return
@@ -282,7 +183,7 @@ func testImageType(filepath string) int {
 
 func apiImageUploadHandler(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 	r.ParseMultipartForm(32 << 20)
-	path := GetPathParts(r, "/api/upload/", 2)
+	path := GetPathParts(r, "/api/v0/upload/", 2)
 	if len(path) != 2 {
 		http.NotFound(w, r)
 		return
@@ -330,7 +231,7 @@ func apiImageUploadHandler(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 
 func apiGpxUploadHandler(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 	r.ParseMultipartForm(32 << 15)
-	path := GetPathParts(r, "/api/upload/", 2)
+	path := GetPathParts(r, "/api/v0/upload/", 2)
 	if len(path) != 2 {
 		http.NotFound(w, r)
 		return
@@ -372,7 +273,7 @@ func apiUploadHandler(db *sql.DB) http.Handler {
 			return
 		}
 
-		path := GetPathParts(r, "/api/upload/", 2)
+		path := GetPathParts(r, "/api/v0/upload/", 2)
 		if len(path) != 2 {
 			http.NotFound(w, r)
 			return
@@ -392,14 +293,13 @@ func apiUploadHandler(db *sql.DB) http.Handler {
 
 func ApiHandler(db *sql.DB) http.Handler {
 	types := map[string]http.Handler{
-		"gallery": apiGalleryHandler(db),
 		"image": apiImageHandler(db),
 		"upload": apiUploadHandler(db),
 		"user": apiUserManagement(db),
 	}
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		path := GetPathParts(r, "/api/", 3)
+		path := GetPathParts(r, "/api/v0/", 3)
 		if len(path) == 0 {
 			http.NotFound(w, r)
 			return
