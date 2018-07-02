@@ -10,6 +10,46 @@ import (
 	"fmt"
 )
 
+type Authorizer struct {
+	DB *sql.DB
+}
+
+
+func (A Authorizer) GetUserFromAuthorization(authtoken string) string {
+	secret := util.GetMetadataValue(A.DB, "secret")
+	user, err := GetUserAuthentication(authtoken, []byte(secret))
+	if err != nil {
+		return ""
+	}
+	return user
+}
+
+func (A Authorizer) GetAuthorization(w http.ResponseWriter, r *http.Request) string {
+	authorization := r.Header.Get("Authorization")
+	if authorization != "" {
+		if authorization[:6] == "Bearer" {
+			authorization = authorization[7:]
+		}
+		return A.GetUserFromAuthorization(authorization)
+	}
+
+	cookie, err := r.Cookie("jwt")
+	if err == nil {
+		return A.GetUserFromAuthorization(cookie.Value)
+	}
+
+	return "";
+}
+
+
+
+
+
+
+
+
+
+
 /* A pretty standard GTFO message */
 func UnauthorizedFailPage() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

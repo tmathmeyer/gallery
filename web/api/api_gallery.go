@@ -1,80 +1,67 @@
 package api
 
 import (
-	"net/http"
-	"database/sql"
 	"encoding/json"
-	"log"
 	"os"
 	"../../web"
 	"../../database/generated"
 	"../../database/util"
 )
 
-type Gallery struct {
-	DB *sql.DB
-}
+type Gallery struct {}
 
-func (G Gallery) GetDatabase() *sql.DB {
-	return G.DB
-}
+func (G Gallery) Get(N NetReq) int {
+	N.W.Header().Set("Content-Type", "application/json")
 
-func (G Gallery) Get(w http.ResponseWriter, r *http.Request, url []string) {
-	if len(url) == 0 {
-		galleries, err := generated.QueryGalleryTable(G.DB, map[string]interface{}{})
+	if len(N.Url) == 0 {
+		galleries, err := generated.QueryGalleryTable(N.DB, map[string]interface{}{})
 		if err != nil {
-			http.NotFound(w, r);
-			return
+			return N.NotFound()
 		}
 		data, err := json.Marshal(galleries)
 		if err != nil {
-			http.NotFound(w, r);
-			return
+			return N.NotFound()
 		}
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(data)
-		return
-	}
-	if len(url) == 1 {
-		galleries, err := generated.QueryGalleryTable(G.DB, map[string]interface{}{
-			"Path": url[0],
+		N.Write(data)
+		return 200
+	} else if len(N.Url) == 1 {
+		galleries, err := generated.QueryGalleryTable(N.DB, map[string]interface{}{
+			"Path": N.Url[0],
 		})
 		if err != nil {
-			http.NotFound(w, r);
-			return
+			return N.NotFound()
 		}
 		if len(galleries) != 1 {
-			http.NotFound(w, r);
-			return
+			return N.NotFound()
 		}
 		data, err := json.Marshal(galleries[0])
 		if err != nil {
-			http.NotFound(w, r);
-			return
+			return N.NotFound()
 		}
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(data)
-		return
+		N.Write(data)
+		return 200
+	} else {
+		return N.NotFound()
 	}
-	http.NotFound(w, r)
 }
 
-func (G Gallery) Post(w http.ResponseWriter, r *http.Request, url []string) {
-	r.ParseForm()
-	gn := r.Form["galleryname"]
+func (G Gallery) Post(N NetReq) int {
+	if !N.IsAdmin() {
+		return N.Error("Unauthorized", 403)
+	}
+
+	N.R.ParseForm()
+	gn := N.R.Form["galleryname"]
 	if len(gn) != 1 {
-		http.Error(w, "missing galleryname", 400)
-		return
+		return N.Error("Missing galleryname field", 400)
 	}
 
 	galleryname := gn[0]
-
-	dataStore := util.GetMetadataValue(G.DB, "dataStore")
-	imageStore := util.GetMetadataValue(G.DB, "imageStore")
+	dataStore := util.GetMetadataValue(N.DB, "dataStore")
+	imageStore := util.GetMetadataValue(N.DB, "imageStore")
 
 	if imageStore == "" || dataStore == "" {
-		log.Fatal("Can't operate without data and image locations")
-		return
+		return N.Error("No Space for data or images", 500)
 	}
 
 	localpath := util.MakeFriendlyPath(galleryname)
@@ -84,19 +71,17 @@ func (G Gallery) Post(w http.ResponseWriter, r *http.Request, url []string) {
 
 	err := os.Mkdir(imageStore + "/" + localpath, os.ModePerm)
 	if err != nil {
-		http.Error(w, "Failed to make image store: "+localpath, 500)
+		return N.Error("Failed to make image store: "+localpath, 500)
 	}
 	err = os.Mkdir(dataStore + "/" + localpath, os.ModePerm)
 	if err != nil {
-		http.Error(w, "Failed to make data store: "+localpath, 500)
+		return N.Error("Failed to make data store: "+localpath, 500)
 	}
 
 	err = os.Symlink("../../static/placeholder.png", imageStore + "/" + localpath + "/480placeholder.png")
 	if err != nil {
-		http.NotFound(w, r)
-		return
+		return N.NotFound()
 	}
-
 
 	var gallery generated.Gallery
 	gallery.Name = galleryname
@@ -104,44 +89,46 @@ func (G Gallery) Post(w http.ResponseWriter, r *http.Request, url []string) {
 	gallery.Splash = "placeholder.png"
 	gallery.Lat = 0
 	gallery.Lon = 0
-	generated.InsertGalleryTable(G.DB, gallery)
+	generated.InsertGalleryTable(N.DB, gallery)
 	
-	http.Error(w, "OK", 200)
+	return N.OK()
 }
 
-func (G Gallery) Put(w http.ResponseWriter, r *http.Request, url []string) {
-	if len(url) != 1 {
-		http.NotFound(w, r)
-		return
+func (G Gallery) Put(N NetReq) int {
+	if !N.IsAdmin() {
+		return N.Error("Unauthorized", 403)
 	}
 
-	r.ParseForm()
+	if len(N.Url) != 1 {
+		return N.NotFound()
+	}
+
+	N.R.ParseForm()
 	props := []string{"name", "splash", "lat", "lon", "hasgpx"}
 	for _, prop := range props {
-		gn := r.Form[prop]
+		gn := N.R.Form[prop]
 		if len(gn) == 1 {
-			err := generated.UpdateGalleryTable(G.DB, prop, gn[0], map[string]interface{}{
-				"Path": url[0],
+			err := generated.UpdateGalleryTable(N.DB, prop, gn[0], map[string]interface{}{
+				"Path": N.Url[0],
 			})
 			if err != nil {
-				http.Error(w, "Failed to change property " + prop, 500)
-				return
+				return N.Error("Failed to change property " + prop, 500)
 			}
 		}
 	}
-	http.Error(w, "OK", 200)
+	return N.OK()
 }
 
-func (G Gallery) Delete(w http.ResponseWriter, r *http.Request, url []string) {
-	http.NotFound(w, r)
+func (G Gallery) Delete(N NetReq) int {
+	return N.NotFound()
 }
 
-func (G Gallery) Patch(w http.ResponseWriter, r *http.Request, url []string) {
-	http.NotFound(w, r)
+func (G Gallery) Patch(N NetReq) int {
+	return N.NotFound()
 }
 
-func (G Gallery) Head(w http.ResponseWriter, r *http.Request, url []string) {
-	http.NotFound(w, r)
+func (G Gallery) Head(N NetReq) int {
+	return N.NotFound()
 }
 
 func (G Gallery) ResourceName() string {

@@ -33,8 +33,8 @@ func setupHandlers(db *sql.DB) {
 
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
 
-	API := api.API{"_dev"}
-	API.AcceptEndpointHandlerAuthenticated(api.Gallery{db})
+	API := api.API{"_dev", db}
+	API.AcceptEndpointHandler(api.Gallery{})
 }
 
 func main() {
