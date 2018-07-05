@@ -37,10 +37,10 @@ func setupHandlers(db *sql.DB) {
 	// Handle login & save cookies to user's browser
 	http.Handle("/auth/handle", web.LoginRequestHandler(db))
 
-
-
-	// Old Style
+	// Host & resize images
 	http.Handle("/img/", web.ImageRawHandler(db))
+
+	// Configure CSS colors
 	http.Handle("/conf/", web.CssConfigureHandler(db))
 }
 
