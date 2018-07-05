@@ -5,6 +5,8 @@ tables:
     name: [TEXT]
     description: [TEXT]
     gallery: [TEXT]
+    width: [INTEGER]
+    height: [INTEGER]
 
   geodata:
     id: [INTEGER, PRIMARY KEY, AUTOINCREMENT]
@@ -23,6 +25,8 @@ tables:
     owner: [INTEGER]
     is_protected: [INTEGER]
     whitelist: [TEXT]
+    splashWidth: [INTEGER]
+    splashHeight: [INTEGER]
 
   user:
     id: [INTEGER, PRIMARY KEY, AUTOINCREMENT]

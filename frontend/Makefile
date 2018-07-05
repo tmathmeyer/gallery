@@ -5,7 +5,7 @@ all:
 	cp -r icons/* static/
 	cp -r js/* static/
 	cp -r libraries/* static/
-	cp -r typescript/*.js static/
+	mv typescript/*.js static/
 
 clean:
 	make -C typescript clean

@@ -126,6 +126,8 @@ func (G Gallery) CreateGallery(N NetReq) int {
 	gallery.Splash = "placeholder.png"
 	gallery.Lat = 0
 	gallery.Lon = 0
+	gallery.Splashheight = 1;
+	gallery.Splashwidth = 1;
 	generated.InsertGalleryTable(N.DB, gallery)
 	
 	return N.OK()
@@ -188,6 +190,20 @@ func (G Gallery) Put(N NetReq) int {
 	for _, prop := range props {
 		gn := N.R.Form[prop]
 		if len(gn) == 1 {
+			if prop == "splash" {
+				photos, err := generated.QueryPhotoTable(N.DB, map[string]interface{}{
+					"Name": gn[0],
+				})
+				if err != nil {
+					return N.Error("Could not find photo dimensions when setting thumbnail!", 500)
+				}
+				err = generated.UpdateGalleryTable(N.DB, "splashWidth", photos[0].Width, map[string]interface{}{
+					"Path": N.Url[0],
+				})
+				err = generated.UpdateGalleryTable(N.DB, "splashHeight", photos[0].Height, map[string]interface{}{
+					"Path": N.Url[0],
+				})
+			}
 			err := generated.UpdateGalleryTable(N.DB, prop, gn[0], map[string]interface{}{
 				"Path": N.Url[0],
 			})

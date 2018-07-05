@@ -8,6 +8,7 @@ import (
 	"strings"
 	"path/filepath"
 	"os/exec"
+	"bytes"
 	"../../web"
 	"../../database/generated"
 	"../../database/util"
@@ -45,6 +46,19 @@ func testImageType(filepath string) int {
 	}
 }
 
+func getImageDimensions(path string) (int, int) {
+	cmd := exec.Command("identify", "-format", "%w %h", path)
+	var stdout bytes.Buffer
+	cmd.Stdout = &stdout
+	err := cmd.Run()
+	if err != nil {
+		return 1, 1
+	}
+	var w, h int
+	fmt.Sscanf(string(stdout.Bytes()), "%d %d", &w, &h)
+	return w, h
+}
+
 func (I Image) Post(N NetReq) int {
 	if !N.IsAdmin() {
 		return N.Error("Unauthorized", 403)
@@ -79,11 +93,15 @@ func (I Image) Post(N NetReq) int {
 	defer f.Close()
 	io.Copy(f, file)
 
+	w, h := getImageDimensions(writeToPath)
+
 	var photo generated.Photo
 	photo.Type = testImageType(writeToPath)
 	photo.Name = filename+fileExtension
 	photo.Description = filename+fileExtension
 	photo.Gallery = galleryPath
+	photo.Width = w
+	photo.Height = h
 
 	generated.InsertPhotoTable(N.DB, photo)
 	return N.Error(filename+fileExtension, 200)

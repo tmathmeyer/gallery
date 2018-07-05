@@ -67,7 +67,7 @@ class VerticallyExpandingGrid {
     this.highest_open_row = 0;
     this.big = true;
     this.rng = new SeedableRNG();
-    this.rng.Seed(123645);
+    this.rng.Seed(1236445);
   }
 
   private rowOpening(row: number): number {
@@ -139,9 +139,19 @@ class VerticallyExpandingGrid {
     this.updateHighestOpenRow();
   }
 
+  public setOccupiedRange(rects: [[number, number], [number, number]][]) {
+    for (let r of rects) {
+      for(let x=r[0][0]; x<r[1][0]; x++) {
+        for(let y=r[0][1]; y<r[1][1]; y++) {
+          this.SetTileOccupied([[x, y]], -1);
+        }
+      }
+    }
+  }
+
   private placeElement(eid, elements, row, column, update) : GalleryImage[] {
     let _remaining = this.openStreakLength(row, column);
-    let _max_size = Math.floor(this.gridColumns / 2.5);
+    let _max_size = Math.floor(this.gridColumns / 2.8);
     let _min_size = this.minimumSize;
     if (_min_size * 2 > _remaining) {
       _min_size = _remaining;
@@ -209,6 +219,7 @@ export class Gallery {
   private imageElementMap : Map<string, [GalleryImage, HTMLElement]>;
   private eventHandlers : Map<string, Map<string, (img: GalleryImage)=>void>>;
   private listenerInterceptors : Map<string, (event)=>void>;
+  private rects : [[number, number], [number, number]][];
 
   /* default constructor */
   constructor(private galleryElementId: string, private gridColumns: number, private minimumSize: number) {
@@ -218,6 +229,7 @@ export class Gallery {
     this.rawImages = [];
     this.generated_rows = 1;
     this.tileCoords = []
+    this.rects = []
 
     let _element = document.getElementById(galleryElementId);
     if (!_element) {
@@ -244,6 +256,7 @@ export class Gallery {
 
   private repaint() {
     let _g = new VerticallyExpandingGrid(this.gridColumns, this.minimumSize);
+    _g.setOccupiedRange(this.rects);
     _g.SetTileOccupied(this.tileCoords, -1);
     let _this_capture = this;
     this.generated_rows = _g.ArrangeElements(this.rawImages.slice(), (E, x, y, w, h)=>{
@@ -283,6 +296,10 @@ export class Gallery {
   public SetExcludedTiles(tileCoords: [number, number][]) {
     this.tileCoords = tileCoords;
     this.repaint();
+  }
+
+  public SetExcludedRange(rect: [[number, number], [number, number]]) {
+    this.rects.push(rect);
   }
 
   public Render(images: GalleryImage[]) {

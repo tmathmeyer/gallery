@@ -7,7 +7,7 @@
 
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
-  		<script src="/static/require.js" data-main="static/load_images"></script>
+  		<script src="/static/require.full.js" data-main="static/load_images"></script>
 
 		<script src="/static/gpx.js"></script>
 	</head>
@@ -22,50 +22,27 @@
 		</div>
 		<div id="content">
 			<div id="contentscroll">
-				<div class="albumcover" id="overviewmap"
-				     style="grid-column: 1 / 3; grid-row: 1 / 3;">
-				 </div>
 			</div>
 		</div>
-		<script>
-			function initMap() {
-				mapelem = document.getElementById("overviewmap");
-
-                $.get('/static/topo.json', function(data) {
-                    map = new google.maps.Map(mapelem, {
-                        center: {lat: 0, lng: 0},
-                        zoom: 2,
-                        mapTypeId: 'terrain',
-                        styles: data,
-                        disableDefaultUI: true
-                    });
-                    google.maps.event.addListenerOnce(map, 'idle', function() {
-					    {{with .Galleries}}
-                        {{range .}}
-                        getLocation('{{.Path}}', '{{.Lat}}', '{{.Lon}}', function(dat){
-                            displayData({key: dat}, map)
-                        })
-                        {{end}}
-                        {{end}}
-                    });
-				})
-			}
-		</script>
 
 		<script>
-			requirejs(['static/load_images.js', 'static/gallery.js'], function(load_images, gallery) {
+			requirejs.config({
+			    baseUrl: '/static',
+			});
+
+			requirejs(['load_images', 'gallery'], function(load_images, gallery) {
 				covertitleboxes = [
 					{{with .Galleries}}
 					{{range .}}
-					new load_images.GalleryTileImageLoader('/img/{{.Path}}/{{.Splash}}/TN', [1, 1], '{{.Name}}', '{{.Path}}'),
+					new load_images.GalleryTileImageLoader('/img/{{.Path}}/{{.Splash}}/VGA', [{{.Splashwidth}}, {{.Splashheight}}], '{{.Name}}', '{{.Path}}'),
 					{{end}}
 					{{end}}
 				];
-				var G = new gallery.Gallery('contentscroll', 40, 11);
+				width = 40;
+				var G = new gallery.Gallery('contentscroll', width, 5);
+				G.Render(covertitleboxes);
 			})
 		</script>
-
-		<!-- <script src="https://maps.googleapis.com/maps/api/js?key={{.APIKey}}&callback=initMap" async defer></script> -->
 	</body>
 </html>
 

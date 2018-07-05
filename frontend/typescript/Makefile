@@ -2,4 +2,4 @@ all:
 	tsc
 
 clean:
-	rm *.js
+	rm -f *.js
