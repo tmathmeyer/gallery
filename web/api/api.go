@@ -84,3 +84,8 @@ func (N NetReq) IsAdmin() bool {
 func (N NetReq) Write(msg []byte) {
 	N.W.Write(msg)
 }
+
+func (N NetReq) ServeFile(f string) int {
+	http.ServeFile(N.W, N.R, f)
+	return 200
+}

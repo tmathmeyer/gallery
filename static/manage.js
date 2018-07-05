@@ -230,7 +230,7 @@ function load_gallery_for_changes(elem) {
 	$("#galleryeditor").removeClass("hidden")
 
 	document.getElementById("photos").innerHTML = ''
-	sendData('GET', null, '/api/v0/image/'+path)(null, makePhotoSquares)
+	sendData('GET', null, '/api/v_dev/images/'+path)(null, makePhotoSquares)
 }
 
 function syncMap(iterable, asyncMapper, acceptor) {
@@ -284,7 +284,7 @@ function uploadFileForImage(img_el, ea) {
 	image = img_el['element']
 	image.querySelectorAll('progress')[0].classList.remove('hidden')
 	$.ajax({
-		url: '/api/v0/upload/image/'+$("#gallerynamesubmit").attr("path"),
+		url: '/api/v_dev/images/'+$("#gallerynamesubmit").attr("path"),
 		type: 'POST',
 		data: form,
 		cache: false,
@@ -315,7 +315,7 @@ function uploadGPX(map) {
 	form = new FormData()
 	form.append('gpx', document.getElementById('gpxupload_hidden').files[0])
 	$.ajax({
-		url: '/api/v0/upload/gpx/'+$("#gallerynamesubmit").attr("path"),
+		url: '/api/v_dev/gallery/'+$("#gallerynamesubmit").attr("path") + '/gpx',
 		type: 'POST',
 		data: form,
 		cache: false,
@@ -393,7 +393,7 @@ $(document).ready(function() {
 });
 
 function render_gpx(map, location_data) {
-	$.ajax({url: '/gdata/'+get_gallery_name()+'/gpx', dataType: "xml",
+	$.ajax({url: '/api/v_dev/gallery/'+get_gallery_name()+'/gpx', dataType: "xml",
 		success: function(data) {
 			mapGPX = gpxRaw2Path(data)
 			renderGpx(mapGPX, map)
@@ -473,7 +473,7 @@ function init_map() {
 		$('.locationconfig-display').click(function() {
 			map_configuration.toggleClass('hidden')
 			map_configuration.append(map_element)
-			render_map_panel(map, sendData('GET', 0, '/gdata/'+get_gallery_name()+'/location'))
+			render_map_panel(map, sendData('GET', 0, '/api/v_dev/gallery/'+get_gallery_name()+'/location'))
 		})
 
 		$('.locationconfig-destroy').click(function() {

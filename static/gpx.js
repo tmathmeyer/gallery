@@ -188,7 +188,7 @@ function gpxRaw2Path(gpxdata) {
 }
 
 function readGpxPath(path, cb) {
-	$.ajax({url: '/gdata/'+path+'/gpx', dataType: "xml",
+	$.ajax({url: '/api/v_dev/gallery/'+path+'/gpx', dataType: "xml",
 		success: function(data) {
 			cb(gpxRaw2Path(data))
 		}

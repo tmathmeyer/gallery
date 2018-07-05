@@ -17,7 +17,6 @@ func setupHandlers(db *sql.DB) {
 	// No authentication
 	http.Handle("/", web.IndexHandler(db))
 	http.Handle("/gallery/", web.GalleryDetailhandler(db))
-	http.Handle("/gdata/", web.GalleryDataHandler(db))
 	http.Handle("/view/", web.DragAndDropImageHandler(db))
 	http.Handle("/pano/", web.PanoramicImageHandler(db))
 	http.Handle("/img/", web.ImageRawHandler(db))
@@ -29,13 +28,13 @@ func setupHandlers(db *sql.DB) {
 	http.Handle("/manage", web.VerifyAuthenticationMiddleware(
 							web.GalleryManagementHandler(db),
 							web.LoginPage(), db))
-	http.Handle("/api/v0/", web.VerifyAuthenticationMiddleware(web.ApiHandler(db), nil, db))
 
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
 
 	API := api.API{"_dev", db}
 	API.AcceptEndpointHandler(api.Gallery{})
 	API.AcceptEndpointHandler(api.Users{})
+	API.AcceptEndpointHandler(api.Image{})
 }
 
 func main() {

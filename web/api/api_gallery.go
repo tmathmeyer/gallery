@@ -2,7 +2,9 @@ package api
 
 import (
 	"encoding/json"
+	"io"
 	"os"
+	"fmt"
 	"../../web"
 	"../../database/generated"
 	"../../database/util"
@@ -10,46 +12,81 @@ import (
 
 type Gallery struct {}
 
-func (G Gallery) Get(N NetReq) int {
-	N.W.Header().Set("Content-Type", "application/json")
+func (G Gallery) ListGalleries(N NetReq) int {
+	galleries, err := generated.QueryGalleryTable(N.DB, map[string]interface{}{})
+	if err != nil {
+		return N.NotFound()
+	}
+	data, err := json.Marshal(galleries)
+	if err != nil {
+		return N.NotFound()
+	}
+	N.Write(data)
+	return 200
+}
 
-	if len(N.Url) == 0 {
-		galleries, err := generated.QueryGalleryTable(N.DB, map[string]interface{}{})
-		if err != nil {
-			return N.NotFound()
-		}
-		data, err := json.Marshal(galleries)
-		if err != nil {
-			return N.NotFound()
-		}
-		N.Write(data)
-		return 200
-	} else if len(N.Url) == 1 {
-		galleries, err := generated.QueryGalleryTable(N.DB, map[string]interface{}{
-			"Path": N.Url[0],
+func (G Gallery) GetGalleryDetail(N NetReq) int {
+	galleries, err := generated.QueryGalleryTable(N.DB, map[string]interface{}{
+		"Path": N.Url[0],
+	})
+	if err != nil {
+		return N.NotFound()
+	}
+	if len(galleries) != 1 {
+		return N.NotFound()
+	}
+	data, err := json.Marshal(galleries[0])
+	if err != nil {
+		return N.NotFound()
+	}
+	N.Write(data)
+	return 200
+}
+
+func (G Gallery) GetGalleryDataFile(N NetReq) int {
+	galleries, err := generated.QueryGalleryTable(N.DB, map[string]interface{}{
+		"Path": N.Url[0],
+	})
+	if err != nil {
+		return N.NotFound()
+	}
+	if len(galleries) != 1 {
+		return N.NotFound()
+	}
+
+	dataFsLocation := util.GetMetadataValue(N.DB, "dataStore")
+	switch N.Url[1] {
+	case "gpx":
+		return N.ServeFile(fmt.Sprintf("%s/%s/route.gpx", dataFsLocation, galleries[0].Path))
+	case "location":
+		jData, err := json.Marshal(map[string]interface{}{
+			"lat": galleries[0].Lat,
+			"lon": galleries[0].Lon,
+			"hasgpx": galleries[0].Hasgpx,
 		})
 		if err != nil {
-			return N.NotFound()
+			return N.Error("failed to generate location data", 500)
 		}
-		if len(galleries) != 1 {
-			return N.NotFound()
-		}
-		data, err := json.Marshal(galleries[0])
-		if err != nil {
-			return N.NotFound()
-		}
-		N.Write(data)
+
+		N.W.Header().Set("Content-Type", "application/json")
+		N.Write(jData)
 		return 200
-	} else {
+	default:
 		return N.NotFound()
 	}
 }
 
-func (G Gallery) Post(N NetReq) int {
-	if !N.IsAdmin() {
-		return N.Error("Unauthorized", 403)
+func (G Gallery) Get(N NetReq) int {
+	N.W.Header().Set("Content-Type", "application/json")
+	switch(len(N.Url)) {
+	case 0: return G.ListGalleries(N)
+	case 1: return G.GetGalleryDetail(N)
+	case 2: return G.GetGalleryDataFile(N)
+	default: return N.NotFound()
 	}
+}
 
+func (G Gallery) CreateGallery(N NetReq) int {
 	N.R.ParseForm()
 	gn := N.R.Form["galleryname"]
 	if len(gn) != 1 {
@@ -92,6 +129,49 @@ func (G Gallery) Post(N NetReq) int {
 	generated.InsertGalleryTable(N.DB, gallery)
 	
 	return N.OK()
+}
+
+func (G Gallery) UploadGPX(N NetReq) int {
+	N.R.ParseMultipartForm(32 << 15)
+	galleryPath := N.Url[0]
+	imageStore := util.GetMetadataValue(N.DB, "dataStore")
+
+	file, _, err := N.R.FormFile("gpx")
+	if err != nil {
+		fmt.Println(err)
+		return N.Error("Upload Failed", 500)
+	}
+	defer file.Close()
+
+	writeToPath := fmt.Sprintf("%s/%s/route.gpx", imageStore, galleryPath)
+
+	f, err := os.OpenFile(writeToPath, os.O_WRONLY|os.O_CREATE, 0666)
+	if err != nil {
+		fmt.Println(err)
+		return N.Error("Upload Failed", 500)
+	}
+	defer f.Close()
+	io.Copy(f, file)
+
+	generated.UpdateGalleryTable(N.DB, "hasgpx", 1, map[string]interface{}{
+		"Path": galleryPath,
+	})
+
+	return N.OK()
+}
+
+func (G Gallery) Post(N NetReq) int {
+	if !N.IsAdmin() {
+		return N.Error("Unauthorized", 403)
+	}
+	switch(len(N.Url)) {
+	case 0: return G.CreateGallery(N)
+	case 2: 
+	if N.Url[1] == "gpx" {
+		return G.UploadGPX(N)
+	}
+	}
+	return N.NotFound()
 }
 
 func (G Gallery) Put(N NetReq) int {

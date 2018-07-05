@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"../database/util"
 	"../database/generated"
-	"encoding/json"
 )
 
 type GalleryDetailModel struct {
@@ -17,48 +16,6 @@ type GalleryDetailModel struct {
 	Title       string
 	GpxPresent  bool
 	APIKey      string
-}
-
-// GET /gdata/:gallery/:resource
-func GalleryDataHandler(db *sql.DB) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		parts := GetPathParts(r, "/gdata/", 2)
-		galleryName := parts[0]
-		resourceType := parts[1]
-
-		galleries, err := generated.QueryGalleryTable(db, map[string]interface{}{
-			"Path": galleryName,
-		})
-		if err != nil || len(galleries) != 1 {
-			http.NotFound(w, r)
-			return
-		}
-
-		dataFsLocation := util.GetMetadataValue(db, "dataStore")
-
-		switch resourceType {
-		case "gpx":
-			resource := fmt.Sprintf("%s/%s/route.gpx", dataFsLocation, galleries[0].Path)
-			http.ServeFile(w, r, resource)
-		case "location":
-			result := map[string]interface{}{
-				"lat": galleries[0].Lat,
-				"lon": galleries[0].Lon,
-				"hasgpx": galleries[0].Hasgpx,
-			}
-			jData, err := json.Marshal(result)
-			if err != nil {
-				panic(err)
-				return
-			}
-
-			w.Header().Set("Content-Type", "application/json")
-			w.Write(jData)
-
-		default:
-			http.NotFound(w, r)
-		}
-	})
 }
 
 // GET /gallery/:gallery
