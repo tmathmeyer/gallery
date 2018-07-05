@@ -20,6 +20,7 @@ func setupHandlers(db *sql.DB) {
 	PAGES.AcceptPageHandler(pages.Index{}, false)
 	PAGES.AcceptPageHandler(pages.Management{}, true)
 	PAGES.AcceptPageHandler(pages.Gallery{}, false)
+	PAGES.AcceptPageHandler(pages.Image{}, false)
 
 	// API endpoints
 	// TODO source version from a config file so it is shared in the frontend
@@ -38,7 +39,6 @@ func setupHandlers(db *sql.DB) {
 
 
 	// Old Style
-	http.Handle("/view/", web.DragAndDropImageHandler(db))
 	http.Handle("/pano/", web.PanoramicImageHandler(db))
 	http.Handle("/img/", web.ImageRawHandler(db))
 
