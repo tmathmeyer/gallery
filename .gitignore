@@ -4,3 +4,5 @@ rundir/
 .data
 *.sqlite
 server
+frontend/static
+frontend/typescript/*.js
