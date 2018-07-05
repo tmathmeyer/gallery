@@ -1,14 +1,35 @@
-bin:
-	cd database && python generate.py
+
+
+all: backend_ frontend_
+	mkdir -p rundir
+	mkdir -p rundir/static
+	mkdir -p rundir/templates
+	cp exif/bin/photosphere rundir/
+	cp backend/server rundir/
+	cp frontend/colors.yaml rundir/
+	cp frontend/static/* rundir/static/
+	cp -r frontend/templates/* rundir/templates/
+
+setup: all
+	make -C backend/ init
+	mv backend/live.sqlite rundir/
+
+
+#build the frontend code
+frontend_:
+	make -C frontend
+
+# Build the backend binary
+backend_: exif_
+	make -C backend/
+
+# build the exif project
+exif_:
+	git submodule init
+	git submodule update
 	make -C exif/
-	go build -o server main.go
 
-run:
-	cd database && python generate.py
-	go run main.go
-
-init:
-	rm -f live.sqlite
-	cp -n setup.template.go setup.go
-	vim setup.go
-	go run setup.go
+clean:
+	make -C frontend clean
+	make -C backend clean
+	rm -rf rundir

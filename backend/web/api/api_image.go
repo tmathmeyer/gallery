@@ -36,7 +36,7 @@ func (I Image) Get(N NetReq) int {
 }
 
 func testImageType(filepath string) int {
-	cmd := exec.Command("./exif/bin/photosphere", filepath)
+	cmd := exec.Command("./photosphere", filepath)
 	err := cmd.Run()
 	if err != nil {
 		return 0 // Not a panoramic

@@ -26,6 +26,6 @@ func main() {
 // DO NOT EDIT BELOW HERE
 
 
-	os.Mkdir(util.GetMetadataValue(db, "dataStore"), os.ModePerm)
-	os.Mkdir(util.GetMetadataValue(db, "imageStore"), os.ModePerm)
+	os.Mkdir("../rundir/" + util.GetMetadataValue(db, "dataStore"), os.ModePerm)
+	os.Mkdir("../rundir/" + util.GetMetadataValue(db, "imageStore"), os.ModePerm)
 }
