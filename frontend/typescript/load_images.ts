@@ -1,23 +1,35 @@
 
 import { GalleryImage, Gallery, SeedableRNG } from "./gallery";
 
-export class RealImageLoader extends GalleryImage {
+export class GalleryTileImageLoader extends GalleryImage {
+
+  constructor(url: string, private dim: [number, number], private title: string, private name: string) {
+    super(url)
+  }
 
   GetTypeName() : string {
-    return "ImageLoader";
+    return "GalleryTileLoader";
   }
 
   GetDomElement() : HTMLElement {
     let _result = document.createElement('div');
-    _result.style.background = "url("+this.imageUrl+")";
-    _result.style.animation = 'fadein ' + (Math.random() * 7 + 1) + 's';
+    _result.classList.add('GalleryImage-' + this.GetTypeName());
+    _result.classList.add('albumcover');
+    _result.onclick = () => { location.href='/gallery/' + this.name };
+    _result.style['background-image'] = 'url(' + this.imageUrl + ')';
     _result.style['background-size'] = 'cover';
-    _result.classList.add('GalleryImage-'+this.GetTypeName());
+
+    let _title = document.createElement('div');
+    _title.classList.add('covertitle');
+    _title.classList.add('albumletterpress');
+    _title.innerText = this.title;
+
+    _result.appendChild(_title)
     return _result;
   }
 
   GetAspectRatio() : number {
-    return 1;
+    return this.dim[0] / this.dim[1]
   }
 }
 

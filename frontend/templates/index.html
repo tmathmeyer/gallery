@@ -6,6 +6,9 @@
 		<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+  		<script src="/static/require.js" data-main="static/load_images"></script>
+
 		<script src="/static/gpx.js"></script>
 	</head>
 	<body>
@@ -22,18 +25,6 @@
 				<div class="albumcover" id="overviewmap"
 				     style="grid-column: 1 / 3; grid-row: 1 / 3;">
 				 </div>
-				{{with .Galleries}}
-				{{range .}}
-				<div class="albumcover"
-				     onclick="location.href='/gallery/{{.Path}}'"
-				     style="background: url(/img/{{.Path}}/{{.Splash}}/TN);
-				            background-size:cover;">
-					<div class="covertitle albumletterpress">
-						{{.Name}}
-					</div>
-				</div>
-				{{end}}
-				{{end}}
 			</div>
 		</div>
 		<script>
@@ -60,7 +51,21 @@
 				})
 			}
 		</script>
-		<script src="https://maps.googleapis.com/maps/api/js?key={{.APIKey}}&callback=initMap" async defer></script>
+
+		<script>
+			requirejs(['static/load_images.js', 'static/gallery.js'], function(load_images, gallery) {
+				covertitleboxes = [
+					{{with .Galleries}}
+					{{range .}}
+					new load_images.GalleryTileImageLoader('/img/{{.Path}}/{{.Splash}}/TN', [1, 1], '{{.Name}}', '{{.Path}}'),
+					{{end}}
+					{{end}}
+				];
+				var G = new gallery.Gallery('contentscroll', 40, 11);
+			})
+		</script>
+
+		<!-- <script src="https://maps.googleapis.com/maps/api/js?key={{.APIKey}}&callback=initMap" async defer></script> -->
 	</body>
 </html>
 
