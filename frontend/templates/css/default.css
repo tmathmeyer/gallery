@@ -53,9 +53,22 @@ li {
 	left: 0;
 	padding-top: 5px;
 	height: 100%;
-	right: -17px;
+	right: 0;
 	display: grid;
 	grid-auto-rows: minmax(400px, 400px);
+}
+
+#contentscroll::-webkit-scrollbar {
+    width: 1em;
+}
+ 
+#contentscroll::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+}
+ 
+#contentscroll::-webkit-scrollbar-thumb {
+  background-color: darkgrey;
+  outline: 1px solid slategrey;
 }
 
 @media (min-width: 560px) {

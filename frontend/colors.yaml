@@ -2,7 +2,7 @@ background: "#0a0a0a"
 text_color_press: "#bbbbbb"
 shadow_color_press: "#6a1818"
 
-header_background: "#EEE"
+header_background: "#2f2f2f"
 
 breadcrumb_color_1: "#7a2828"
 breadcrumb_text_1: "#7a2828"

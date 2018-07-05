@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"net/http"
 	"html/template"
+	"fmt"
 )
 
 type PAGES struct {
@@ -42,6 +43,7 @@ func (P PAGES) MakeHandlerFunction(p PageGenerator, a web.Authorizer) http.Handl
 
 		t, err := template.ParseFiles(p.TemplateFile())
 		if err != nil {
+			fmt.Println(err)
 			http.Error(w, "Not Found", 404)
 			return
 		}
@@ -49,6 +51,7 @@ func (P PAGES) MakeHandlerFunction(p PageGenerator, a web.Authorizer) http.Handl
 		data, msg, code := p.TemplateData(P.Database, url, a)
 		if code != 200 {
 			http.Error(w, msg, code)
+			return
 		}
 
 		t.Execute(w, data)

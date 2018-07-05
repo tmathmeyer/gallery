@@ -37,3 +37,5 @@ tables:
   metadata:
     key: [TEXT, PRIMARY KEY]
     value: [TEXT]
+
+version: 0.2

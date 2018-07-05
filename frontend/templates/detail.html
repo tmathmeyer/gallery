@@ -2,17 +2,7 @@
   <head>
     <link rel="stylesheet" type="text/css" href="/static/gallery.css">
     <link rel="stylesheet" type="text/css" href="/conf/common.css">
-    <script>
-      function load_image(gal, img, type) {
-        if(/android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(navigator.userAgent.toLowerCase())) {
-          window.open("/img/"+gal+"/"+img+"/F",'_blank');
-        } else if (type == 0) {
-          window.open("/view/"+gal+"/"+img, '_self');
-        } else if (type == 1) {
-          window.open("/pano/"+gal+"/"+img, '_self');
-        }
-      }
-    </script>
+    <script src="/static/require.full.js" data-main="static/load_images"></script>
   </head>
   <body>
     <div id="header" class="letterpress">
@@ -26,16 +16,27 @@
     </div>
     <div id="content">
       <div id="contentscroll">
-        {{with .Images}}
-        {{range .}}
-        <div class="photo"
-             style="background: url(/img/{{$.GalleryID}}/{{.Name}}/TN); background-size:cover;"
-             onclick="load_image('{{$.GalleryID}}','{{.Name}}', {{.Type}})">
-        </div>
-        {{end}}
-        {{end}}
       </div>
     </div>
+    <script>
+      requirejs.config({
+          baseUrl: '/static',
+      });
+
+      requirejs(['load_images', 'gallery'], function(load_images, gallery) {
+        covertitleboxes = [
+          {{with .Images}}
+          {{range .}}
+          new load_images.GalleryDetailTileImageLoader(
+            '{{$.GalleryID}}', '{{.Name}}', {{.Type}}, [{{.Width}}, {{.Height}}]),
+          {{end}}
+          {{end}}
+        ];
+        width = 31;
+        var G = new gallery.Gallery('contentscroll', width, 9);
+        G.Render(covertitleboxes);
+      })
+    </script>
   </body>
 </html>
 

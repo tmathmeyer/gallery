@@ -303,7 +303,7 @@ export class Gallery {
   }
 
   public Render(images: GalleryImage[]) {
-    this.rawImages = this.rawImages.concat(images);
+    this.rawImages = this.rawImages.concat(images.reverse());
     for(let img of images) {
       let _dom_element = img.GetDomElement();
       this.applyListeners(_dom_element);

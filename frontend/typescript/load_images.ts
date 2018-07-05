@@ -33,33 +33,45 @@ export class GalleryTileImageLoader extends GalleryImage {
   }
 }
 
-export class PreSizedFadeInImageLoader extends GalleryImage {
+export class GalleryDetailTileImageLoader extends GalleryImage {
 
-  constructor(url: string, private dimensions: [number, number]) {
-    super(url);
+  constructor(private gallery: string, private name: string, private type: number, private dim: [number, number]) {
+    super('/img/' + gallery + '/' + name + '/VGA');
   }
 
-  GetTypeName(): string {
-    return "PreSizedFadeInImageLoader"
+  GetTypeName() : string {
+    return "GalleryDetaleTileLoader";
   }
 
-  GetDomElement(): HTMLElement {
-    let _dom_element = document.createElement('div');
-    _dom_element.style.animation = 'fadein 5s';
-    _dom_element.style['background-size'] = 'cover';
-    _dom_element.classList.add('GalleryImage-'+this.GetTypeName());
+  GetDomElement() : HTMLElement {
+    let _result = document.createElement('div');
+    _result.classList.add('GalleryImage-' + this.GetTypeName());
+    _result.classList.add('photo');
+    _result.onclick = () => { this.LoadImage() };
+    _result.style['background-image'] = 'url(' + this.imageUrl + ')';
+    _result.style['background-size'] = 'cover';
+    return _result;
+  }
 
-    let _image_preload = new Image();
-    _image_preload.onload = function() {
-      _dom_element.style['background-image'] = "url("+_image_preload.src+")";
+  private LoadImage() {
+    let mobile = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i;
+    if (mobile.test(navigator.userAgent.toLowerCase())) {
+      window.open('/img/' + this.gallery + '/' + this.name + '/F', '_blank');
+      return
     }
-    _image_preload.src = this.imageUrl;
 
-    return _dom_element;
+    if (this.type == 0) {
+      window.open('/view/' + this.gallery + '/' + this.name, '_self');
+      return
+    }
+
+    if (this.type == 1) {
+      window.open('/pano/' + this.gallery + '/' + this.name, '_self');
+      return
+    }
   }
 
-  GetAspectRatio(): number {
-    return this.dimensions[0] / this.dimensions[1];
+  GetAspectRatio() : number {
+    return this.dim[0] / this.dim[1]
   }
-
 }

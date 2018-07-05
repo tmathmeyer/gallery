@@ -5,6 +5,7 @@ import (
 	"../../database/generated"
 	"../../database/util"
 	"database/sql"
+	"fmt"
 )
 
 type Index struct {}
@@ -25,6 +26,7 @@ func (I Index) TemplateFile() string {
 func (I Index) TemplateData(db *sql.DB, url []string, Auth web.Authorizer) (interface{}, string, int) {
 	galleries, err := generated.QueryGalleryTable(db, map[string]interface{}{})
 	if err != nil {
+		fmt.Println(err)
 		return nil, "Could not load galleries", 500
 	}
 
