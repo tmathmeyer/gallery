@@ -6,7 +6,6 @@ import (
 	"../../ezcrypt"
 	"unicode"
 	"strings"
-	"log"
 )
 
 func MakeFriendlyPath(str string) string {

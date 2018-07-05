@@ -95,7 +95,7 @@ function change_password(id) {
 		data['id'] = id
 	}
 
-	sendData('PUT', 0, '/api/v0/user')(data, function(status) {
+	sendData('PUT', 0, '/api/v_dev/user/')(data, function(status) {
 		alert('Password Changed!')
 	})
 }
@@ -119,7 +119,7 @@ function add_new_user() {
 		add_new_user()
 		return
 	}
-	sendData('POST', 0, '/api/v0/user')({
+	sendData('POST', 0, '/api/v_dev/user/')({
 		'username': username,
 		'password': pass
 	}, function(status) {
@@ -159,7 +159,7 @@ function createTable(table, data, columnGenerators, cb) {
 }
 
 function delete_user(username) {
-	sendData('DELETE', 0, '/api/v0/user/'+username)({},function(status) {
+	sendData('DELETE', 0, '/api/v_dev/user/'+username)({},function(status) {
 		show_user_management(()=>show_user_management())
 	})
 }
@@ -173,7 +173,7 @@ function makeTableLink(text, call, args) {
 }
 
 function populate_user_management(cb) {
-	sendData('GET', 0, '/api/v0/user')({}, function(data) {
+	sendData('GET', 0, '/api/v_dev/user/')({}, function(data) {
 		table = document.getElementById("usertable")
 		createTable(table, data, {
 			'Name': [()=>'Name', (n)=>n.Name],

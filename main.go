@@ -35,6 +35,7 @@ func setupHandlers(db *sql.DB) {
 
 	API := api.API{"_dev", db}
 	API.AcceptEndpointHandler(api.Gallery{})
+	API.AcceptEndpointHandler(api.Users{})
 }
 
 func main() {
