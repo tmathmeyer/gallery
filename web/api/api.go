@@ -19,7 +19,6 @@ type NetReq struct {
 	DB   *sql.DB
 	Url  []string
 	User string
-
 }
 
 type ObjectHandler interface {

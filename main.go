@@ -8,33 +8,41 @@ import (
 	"fmt"
 	"./web"
 	"./web/api"
+	"./web/pages"
 	"./database/generated"
 )
 
 const serverPort string = ":7923"
 
 func setupHandlers(db *sql.DB) {
-	// No authentication
-	http.Handle("/", web.IndexHandler(db))
-	http.Handle("/gallery/", web.GalleryDetailhandler(db))
+	// Templated pages
+	PAGES := pages.PAGES{db}
+	PAGES.AcceptPageHandler(pages.Index{}, false)
+	PAGES.AcceptPageHandler(pages.Management{}, true)
+	PAGES.AcceptPageHandler(pages.Gallery{}, false)
+
+	// API endpoints
+	// TODO source version from a config file so it is shared in the frontend
+	API := api.API{"_dev", db}
+	API.AcceptEndpointHandler(api.Gallery{})
+	API.AcceptEndpointHandler(api.Users{})
+	API.AcceptEndpointHandler(api.Image{})
+
+	// Static files, JS / CSS
+	// TODO move to CDN
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
+
+	// Handle login & save cookies to user's browser
+	http.Handle("/auth/handle", web.LoginRequestHandler(db))
+
+
+
+	// Old Style
 	http.Handle("/view/", web.DragAndDropImageHandler(db))
 	http.Handle("/pano/", web.PanoramicImageHandler(db))
 	http.Handle("/img/", web.ImageRawHandler(db))
 
 	http.Handle("/conf/", web.CssConfigureHandler(db))
-
-	// Related to Authentication
-	http.Handle("/auth/handle", web.LoginRequestHandler(db))
-	http.Handle("/manage", web.VerifyAuthenticationMiddleware(
-							web.GalleryManagementHandler(db),
-							web.LoginPage(), db))
-
-	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
-
-	API := api.API{"_dev", db}
-	API.AcceptEndpointHandler(api.Gallery{})
-	API.AcceptEndpointHandler(api.Users{})
-	API.AcceptEndpointHandler(api.Image{})
 }
 
 func main() {
