@@ -31,6 +31,36 @@ func (I Image) Get(N NetReq) int {
 		return N.Error("Couldn't generate list of photos", 500)
 	}
 
+	imageStore := ""
+	for _, photo := range photos {
+		if photo.Width == 1 && photo.Height == 1 {
+			if imageStore == "" {
+				imageStore = util.GetMetadataValue(N.DB, "imageStore")
+			}
+			get_size_path := fmt.Sprintf("%s/%s/%s%s", imageStore, N.Url[0], photo.Name)
+			width, height := getImageDimensions(get_size_path)
+			photo.Width = width
+			photo.Height = height
+
+			err := generated.UpdatePhotoTable(N.DB, "Width", width, map[string]interface{}{
+				"Id": photo.Id,
+			});
+
+			if err != nil {
+				return N.Error("Failed to write image size", 500)
+			}
+
+			err = generated.UpdatePhotoTable(N.DB, "Height", height, map[string]interface{}{
+				"Id": photo.Id,
+			});
+
+			if err != nil {
+				return N.Error("Failed to write image size", 500)
+			}
+		}
+	}
+
+
 	N.W.Header().Set("Content-Type", "application/json")
 	N.Write(jData)
 	return 200
