@@ -151,7 +151,7 @@ class VerticallyExpandingGrid {
 
   private placeElement(eid, elements, row, column, update) : GalleryImage[] {
     let _remaining = this.openStreakLength(row, column);
-    let _max_size = Math.floor(this.gridColumns / 2.8);
+    let _max_size = Math.floor(this.gridColumns / 3.5);
     let _min_size = this.minimumSize;
     if (_min_size * 2 > _remaining) {
       _min_size = _remaining;
