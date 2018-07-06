@@ -37,7 +37,7 @@ func (I Image) Get(N NetReq) int {
 			if imageStore == "" {
 				imageStore = util.GetMetadataValue(N.DB, "imageStore")
 			}
-			get_size_path := fmt.Sprintf("%s/%s/%s%s", imageStore, N.Url[0], photo.Name)
+			get_size_path := fmt.Sprintf("%s/%s/%s", imageStore, N.Url[0], photo.Name)
 			width, height := getImageDimensions(get_size_path)
 			photo.Width = width
 			photo.Height = height
